@@ -1,0 +1,39 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:block": {
+    "description": {
+      "identifier": "rust:workbench_1",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "Верстак 1 уровня",
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "rust_wb1_side",
+          "render_method": "opaque"
+        },
+        "up": {
+          "texture": "rust_wb1_top",
+          "render_method": "opaque"
+        },
+        "down": {
+          "texture": "rust_wb1_top",
+          "render_method": "opaque"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 3
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 6
+      },
+      "rust:workbench": {
+        "tier": 1
+      },
+      "minecraft:map_color": "#5a5a5a"
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "rust:stone_pickaxe",
+      "menu_category": {
+        "category": "equipment"
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "rust_stone_pickaxe"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "Каменная кирка"
+      },
+      "minecraft:max_stack_size": 1,
+      "minecraft:hand_equipped": true,
+      "minecraft:damage": {
+        "value": 3
+      },
+      "minecraft:durability": {
+        "max_durability": 250
+      },
+      "minecraft:digger": {
+        "use_efficiency": true,
+        "destroy_speeds": [
+          {
+            "block": {
+              "tags": "query.any_tag('rust_node', 'stone', 'rust_loot')"
+            },
+            "speed": 5
+          },
+          {
+            "block": {
+              "tags": "query.any_tag('wood', 'log')"
+            },
+            "speed": 2
+          }
+        ]
+      }
+    }
+  }
+}

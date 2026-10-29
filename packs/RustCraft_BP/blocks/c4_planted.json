@@ -1,0 +1,62 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:block": {
+    "description": {
+      "identifier": "rust:c4_planted",
+      "menu_category": {
+        "category": "none"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "Заряд C4",
+      "minecraft:geometry": "geometry.rust_small",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "rust_c4_planted",
+          "render_method": "opaque"
+        }
+      },
+      "minecraft:destructible_by_mining": false,
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 3600000
+      },
+      "minecraft:loot": "loot_tables/empty.json",
+      "rust:charge": {
+        "type": "c4"
+      },
+      "minecraft:tick": {
+        "interval_range": [
+          200,
+          200
+        ],
+        "looping": false
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -4,
+          0,
+          -4
+        ],
+        "size": [
+          8,
+          5,
+          8
+        ]
+      },
+      "minecraft:selection_box": {
+        "origin": [
+          -4,
+          0,
+          -4
+        ],
+        "size": [
+          8,
+          5,
+          8
+        ]
+      },
+      "minecraft:light_dampening": 0,
+      "minecraft:map_color": "#d6d0b8"
+    }
+  }
+}

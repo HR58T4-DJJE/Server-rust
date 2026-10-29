@@ -1,0 +1,26 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "rust:bandage",
+      "menu_category": {
+        "category": "equipment"
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "rust_bandage"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "Бинт"
+      },
+      "minecraft:max_stack_size": 16,
+      "rust:heal": {
+        "amount": 4,
+        "regen": 0
+      }
+    }
+  }
+}

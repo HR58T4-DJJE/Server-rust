@@ -1,0 +1,38 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:block": {
+    "description": {
+      "identifier": "rust:loot_barrel",
+      "menu_category": {
+        "category": "nature"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "Бочка",
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "rust_barrel_side",
+          "render_method": "opaque"
+        },
+        "up": {
+          "texture": "rust_barrel_top",
+          "render_method": "opaque"
+        },
+        "down": {
+          "texture": "rust_barrel_top",
+          "render_method": "opaque"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.0
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 1
+      },
+      "minecraft:loot": "loot_tables/empty.json",
+      "tag:rust_loot": {},
+      "minecraft:map_color": "#2f5d8f"
+    }
+  }
+}

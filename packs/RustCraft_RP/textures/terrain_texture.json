@@ -1,0 +1,86 @@
+{
+  "resource_pack_name": "rustcraft",
+  "texture_name": "atlas.terrain",
+  "padding": 8,
+  "num_mip_levels": 4,
+  "texture_data": {
+    "rust_stone_node": {
+      "textures": "textures/blocks/rust_stone_node"
+    },
+    "rust_metal_node": {
+      "textures": "textures/blocks/rust_metal_node"
+    },
+    "rust_sulfur_node": {
+      "textures": "textures/blocks/rust_sulfur_node"
+    },
+    "rust_barrel_side": {
+      "textures": "textures/blocks/rust_barrel_side"
+    },
+    "rust_barrel_top": {
+      "textures": "textures/blocks/rust_barrel_top"
+    },
+    "rust_crate_side": {
+      "textures": "textures/blocks/rust_crate_side"
+    },
+    "rust_crate_top": {
+      "textures": "textures/blocks/rust_crate_top"
+    },
+    "rust_tc_side": {
+      "textures": "textures/blocks/rust_tc_side"
+    },
+    "rust_tc_top": {
+      "textures": "textures/blocks/rust_tc_top"
+    },
+    "rust_tc_front": {
+      "textures": "textures/blocks/rust_tc_front"
+    },
+    "rust_wb1_side": {
+      "textures": "textures/blocks/rust_wb1_side"
+    },
+    "rust_wb1_top": {
+      "textures": "textures/blocks/rust_wb1_top"
+    },
+    "rust_wb2_side": {
+      "textures": "textures/blocks/rust_wb2_side"
+    },
+    "rust_wb2_top": {
+      "textures": "textures/blocks/rust_wb2_top"
+    },
+    "rust_wb3_side": {
+      "textures": "textures/blocks/rust_wb3_side"
+    },
+    "rust_wb3_top": {
+      "textures": "textures/blocks/rust_wb3_top"
+    },
+    "rust_recycler_side": {
+      "textures": "textures/blocks/rust_recycler_side"
+    },
+    "rust_recycler_front": {
+      "textures": "textures/blocks/rust_recycler_front"
+    },
+    "rust_sleeping_bag": {
+      "textures": "textures/blocks/rust_sleeping_bag"
+    },
+    "rust_build_twig": {
+      "textures": "textures/blocks/rust_build_twig"
+    },
+    "rust_build_wood": {
+      "textures": "textures/blocks/rust_build_wood"
+    },
+    "rust_build_stone": {
+      "textures": "textures/blocks/rust_build_stone"
+    },
+    "rust_build_metal": {
+      "textures": "textures/blocks/rust_build_metal"
+    },
+    "rust_build_armored": {
+      "textures": "textures/blocks/rust_build_armored"
+    },
+    "rust_c4_planted": {
+      "textures": "textures/blocks/rust_c4_planted"
+    },
+    "rust_satchel_planted": {
+      "textures": "textures/blocks/rust_satchel_planted"
+    }
+  }
+}

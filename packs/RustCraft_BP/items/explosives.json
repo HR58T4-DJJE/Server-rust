@@ -1,0 +1,22 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "rust:explosives",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "rust_explosives"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "Взрывчатка"
+      },
+      "minecraft:max_stack_size": 64
+    }
+  }
+}

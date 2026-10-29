@@ -1,0 +1,30 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "rust:revolver",
+      "menu_category": {
+        "category": "equipment"
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "rust_revolver"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "Револьвер"
+      },
+      "minecraft:max_stack_size": 1,
+      "minecraft:hand_equipped": true,
+      "rust:gun": {
+        "type": "revolver"
+      },
+      "minecraft:cooldown": {
+        "category": "rust_revolver",
+        "duration": 0.1
+      }
+    }
+  }
+}

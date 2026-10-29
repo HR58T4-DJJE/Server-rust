@@ -1,0 +1,18 @@
+# Эти настройки install.sh вписывает в server.properties от Mojang.
+server-name=RustCraft | Выживание как в Rust
+level-name=RustCraft
+gamemode=survival
+force-gamemode=true
+difficulty=normal
+allow-cheats=false
+max-players=30
+online-mode=true
+allow-list=false
+view-distance=12
+tick-distance=4
+player-idle-timeout=0
+default-player-permission-level=member
+texturepack-required=true
+content-log-file-enabled=true
+content-log-console-output-enabled=true
+content-log-level=warning

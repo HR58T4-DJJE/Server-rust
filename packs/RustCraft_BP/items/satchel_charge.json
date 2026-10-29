@@ -1,0 +1,25 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "rust:satchel_charge",
+      "menu_category": {
+        "category": "equipment"
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "rust_satchel_charge"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "Сумка с зарядом"
+      },
+      "minecraft:max_stack_size": 16,
+      "minecraft:block_placer": {
+        "block": "rust:satchel_planted"
+      }
+    }
+  }
+}

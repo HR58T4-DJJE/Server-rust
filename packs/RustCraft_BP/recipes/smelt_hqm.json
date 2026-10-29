@@ -1,0 +1,14 @@
+{
+  "format_version": "1.12",
+  "minecraft:recipe_furnace": {
+    "description": {
+      "identifier": "rust:smelt_hqm"
+    },
+    "tags": [
+      "furnace",
+      "blast_furnace"
+    ],
+    "input": "rust:hqm_ore",
+    "output": "rust:hqm"
+  }
+}

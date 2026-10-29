@@ -1,0 +1,102 @@
+{
+  "resource_pack_name": "rustcraft",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "rust_wood": {
+      "textures": "textures/items/rust_wood"
+    },
+    "rust_stones": {
+      "textures": "textures/items/rust_stones"
+    },
+    "rust_metal_ore": {
+      "textures": "textures/items/rust_metal_ore"
+    },
+    "rust_metal_fragments": {
+      "textures": "textures/items/rust_metal_fragments"
+    },
+    "rust_sulfur_ore": {
+      "textures": "textures/items/rust_sulfur_ore"
+    },
+    "rust_sulfur": {
+      "textures": "textures/items/rust_sulfur"
+    },
+    "rust_hqm_ore": {
+      "textures": "textures/items/rust_hqm_ore"
+    },
+    "rust_hqm": {
+      "textures": "textures/items/rust_hqm"
+    },
+    "rust_cloth": {
+      "textures": "textures/items/rust_cloth"
+    },
+    "rust_scrap": {
+      "textures": "textures/items/rust_scrap"
+    },
+    "rust_metal_pipe": {
+      "textures": "textures/items/rust_metal_pipe"
+    },
+    "rust_gears": {
+      "textures": "textures/items/rust_gears"
+    },
+    "rust_metal_spring": {
+      "textures": "textures/items/rust_metal_spring"
+    },
+    "rust_explosives": {
+      "textures": "textures/items/rust_explosives"
+    },
+    "rust_rock": {
+      "textures": "textures/items/rust_rock"
+    },
+    "rust_stone_hatchet": {
+      "textures": "textures/items/rust_stone_hatchet"
+    },
+    "rust_stone_pickaxe": {
+      "textures": "textures/items/rust_stone_pickaxe"
+    },
+    "rust_metal_hatchet": {
+      "textures": "textures/items/rust_metal_hatchet"
+    },
+    "rust_metal_pickaxe": {
+      "textures": "textures/items/rust_metal_pickaxe"
+    },
+    "rust_wooden_spear": {
+      "textures": "textures/items/rust_wooden_spear"
+    },
+    "rust_hammer": {
+      "textures": "textures/items/rust_hammer"
+    },
+    "rust_craft_book": {
+      "textures": "textures/items/rust_craft_book"
+    },
+    "rust_revolver": {
+      "textures": "textures/items/rust_revolver"
+    },
+    "rust_pipe_shotgun": {
+      "textures": "textures/items/rust_pipe_shotgun"
+    },
+    "rust_sar": {
+      "textures": "textures/items/rust_sar"
+    },
+    "rust_pistol_ammo": {
+      "textures": "textures/items/rust_pistol_ammo"
+    },
+    "rust_handmade_shell": {
+      "textures": "textures/items/rust_handmade_shell"
+    },
+    "rust_rifle_ammo": {
+      "textures": "textures/items/rust_rifle_ammo"
+    },
+    "rust_bandage": {
+      "textures": "textures/items/rust_bandage"
+    },
+    "rust_syringe": {
+      "textures": "textures/items/rust_syringe"
+    },
+    "rust_c4": {
+      "textures": "textures/items/rust_c4"
+    },
+    "rust_satchel_charge": {
+      "textures": "textures/items/rust_satchel_charge"
+    }
+  }
+}

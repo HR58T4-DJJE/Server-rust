@@ -1,0 +1,58 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "RustCraft — механики",
+    "description": "Выживание в стиле Rust: шкафы, рейды, крафт, оружие",
+    "uuid": "790630fb-e1ed-4452-a8f7-32485a5169e7",
+    "version": [
+      1,
+      0,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      21,
+      100
+    ]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "9026b074-e04e-479a-8293-c3fff9b2b929",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "2be6aad0-8d6a-4b9d-a777-e7fc5a5eb848",
+      "entry": "scripts/main.js",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.4.0"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "2.0.0"
+    },
+    {
+      "uuid": "3e7317f9-5211-473c-8cad-d983ffe8554f",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    }
+  ]
+}

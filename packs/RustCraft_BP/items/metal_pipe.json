@@ -1,0 +1,22 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "rust:metal_pipe",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "rust_metal_pipe"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "Металлическая труба"
+      },
+      "minecraft:max_stack_size": 64
+    }
+  }
+}

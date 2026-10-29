@@ -1,0 +1,14 @@
+{
+  "format_version": "1.12",
+  "minecraft:recipe_furnace": {
+    "description": {
+      "identifier": "rust:smelt_sulfur"
+    },
+    "tags": [
+      "furnace",
+      "blast_furnace"
+    ],
+    "input": "rust:sulfur_ore",
+    "output": "rust:sulfur"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "rust:rock",
+      "menu_category": {
+        "category": "equipment"
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "rust_rock"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "Камень"
+      },
+      "minecraft:max_stack_size": 1,
+      "minecraft:hand_equipped": true,
+      "minecraft:damage": {
+        "value": 3
+      },
+      "minecraft:durability": {
+        "max_durability": 300
+      },
+      "minecraft:digger": {
+        "use_efficiency": true,
+        "destroy_speeds": [
+          {
+            "block": {
+              "tags": "query.any_tag('wood', 'log')"
+            },
+            "speed": 2
+          },
+          {
+            "block": {
+              "tags": "query.any_tag('rust_node', 'stone', 'rust_loot')"
+            },
+            "speed": 2
+          }
+        ]
+      }
+    }
+  }
+}

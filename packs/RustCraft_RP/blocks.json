@@ -1,0 +1,61 @@
+{
+  "format_version": [
+    1,
+    1,
+    0
+  ],
+  "rust:stone_node": {
+    "sound": "stone"
+  },
+  "rust:metal_node": {
+    "sound": "stone"
+  },
+  "rust:sulfur_node": {
+    "sound": "stone"
+  },
+  "rust:loot_barrel": {
+    "sound": "metal"
+  },
+  "rust:loot_crate": {
+    "sound": "wood"
+  },
+  "rust:tool_cupboard": {
+    "sound": "wood"
+  },
+  "rust:workbench_1": {
+    "sound": "wood"
+  },
+  "rust:workbench_2": {
+    "sound": "metal"
+  },
+  "rust:workbench_3": {
+    "sound": "metal"
+  },
+  "rust:recycler": {
+    "sound": "metal"
+  },
+  "rust:sleeping_bag": {
+    "sound": "cloth"
+  },
+  "rust:build_twig": {
+    "sound": "wood"
+  },
+  "rust:build_wood": {
+    "sound": "wood"
+  },
+  "rust:build_stone": {
+    "sound": "stone"
+  },
+  "rust:build_metal": {
+    "sound": "metal"
+  },
+  "rust:build_armored": {
+    "sound": "metal"
+  },
+  "rust:c4_planted": {
+    "sound": "metal"
+  },
+  "rust:satchel_planted": {
+    "sound": "cloth"
+  }
+}
