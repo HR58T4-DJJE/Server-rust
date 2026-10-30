@@ -262,7 +262,7 @@ def m_c4():
     m = Model("rust_m_c4", {"body": t_c4_body(), "tape": t_tape(), "pad": t_c4_keypad(), "red": t_red(), "wire": t_wire()})
     m.cube([-5, 0, -3], [10, 4, 6], "body")
     for z in (-2.5, 1.0):  # две ленты-стяжки
-        m.cube([-5.25, -0.01, z], [10.5, 4.26, 1.5], "tape")
+        m.cube([-5.25, 0, z], [10.5, 4.25, 1.5], "tape")
     m.cube([-3, 4, -2], [6, 1, 4], "pad", {"up": "pad"})
     m.cube([3.5, 4, 1], [1, 1, 1], "red")  # мигающий диод
     m.cube([-4.5, 4, -0.5], [1, 0.5, 1], "wire")

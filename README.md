@@ -85,7 +85,20 @@ Minecraft приходится ждать, пока их обновят. Для 
 
 ## Установка
 
-### Вариант A — VPS или домашний ПК на Linux (рекомендуется)
+### Готовый сервер для Ubuntu VPS (самый простой путь)
+
+`./scripts/build-release.sh` собирает `dist/RustCraft-Server-Linux.zip`: свежий Bedrock Dedicated Server
+с уже встроенным аддоном, настройками и скриптами. На VPS (Ubuntu 22.04/24.04, процессор x86_64):
+
+```bash
+apt install -y unzip
+unzip RustCraft-Server-Linux.zip && cd RustCraft-Server-Linux
+sudo ./ops/setup-ubuntu.sh
+```
+
+Скрипт проверит процессор, поставит пакеты, откроет порт 19132/UDP в ufw, установит службу и запустит сервер.
+
+### Вариант A — VPS или домашний ПК на Linux из репозитория
 
 Подойдёт любой VPS от 2 ГБ ОЗУ (на 10–20 игроков лучше 4 ГБ), Ubuntu 22.04/24.04.
 

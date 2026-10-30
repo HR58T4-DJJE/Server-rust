@@ -1,0 +1,47 @@
+RustCraft — готовый сервер Minecraft Bedrock (выживание в стиле Rust)
+Версия игры: см. файл VERSION.txt. Аддон RustCraft уже установлен и подключён к миру.
+
+=== УСТАНОВКА НА UBUNTU VPS (22.04 / 24.04, процессор x86_64) ===
+
+1. Загрузите архив на VPS (с компьютера):
+     scp RustCraft-Server-Linux.zip root@IP_VPS:~
+2. На VPS:
+     apt install -y unzip
+     unzip RustCraft-Server-Linux.zip
+     cd RustCraft-Server-Linux
+     sudo ./ops/setup-ubuntu.sh
+   Скрипт сам: проверит процессор, поставит пакеты, откроет порт 19132/UDP,
+   установит службу и запустит сервер. В конце покажет адрес для подключения.
+3. Если у хостинга есть панель фаервола (Security group / Firewall) — откройте там 19132 UDP.
+
+=== ПОДКЛЮЧЕНИЕ С ТЕЛЕФОНА ===
+  Играть -> Серверы -> Добавить сервер -> адрес = IP VPS, порт 19132.
+  При входе нажмите «Скачать» — загрузятся текстуры и модели RustCraft.
+
+=== УПРАВЛЕНИЕ ===
+  Права админа:      ./ops/console.sh op ВашНик
+  Любая команда:     ./ops/console.sh <команда>      (say, kick, stop ...)
+  Лог сервера:       journalctl -u rustcraft -f
+  Перезапуск:        systemctl restart rustcraft
+  Остановка:         systemctl stop rustcraft
+  Бэкап вручную:     ./ops/backup.sh          (автоматически — каждые 6 часов, папка backups/)
+  Рестарт по плану:  каждый день в 05:00 с предупреждением игроков
+  Состояние в игре:  /rust:status  (TPS, сущности)   Помощь: /rust:info
+
+  Если сервер упадёт — служба поднимет его сама через 10 секунд.
+  Не запускайте ./start.sh, когда установлена служба, — будет два сервера.
+
+=== ПЕРЕНОС СТАРОГО МИРА ===
+  Если у вас уже был сервер RustCraft и нужно сохранить мир:
+    1) остановите старый сервер (stop в консоли / systemctl stop rustcraft);
+    2) скопируйте старую папку worlds/RustCraft/db в новую папку worlds/RustCraft/
+       (файлы world_*_packs.json в новой папке НЕ заменяйте);
+    3) sudo ./ops/setup-ubuntu.sh
+
+=== ОБНОВЛЕНИЕ MINECRAFT ===
+  Когда выйдет новая версия игры, телефоны не пустит на старый сервер.
+  Скачайте новый Bedrock Dedicated Server (Linux) с minecraft.net/download/server/bedrock,
+  распакуйте его поверх этой папки, НЕ заменяя: server.properties, allowlist.json, permissions.json,
+  папки worlds, behavior_packs/RustCraft_BP, resource_packs/RustCraft_RP. Затем systemctl restart rustcraft.
+
+Авторы ресурсов: resource_packs/RustCraft_RP/CREDITS.txt

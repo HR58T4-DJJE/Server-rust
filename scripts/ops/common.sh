@@ -1,3 +1,4 @@
+# shellcheck shell=bash disable=SC2034
 # Общие настройки для скриптов обслуживания. Подключается через `source`.
 # Папка сервера: рядом со скриптами (готовый архив) или server/bds (репозиторий).
 OPS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
