@@ -2,7 +2,7 @@
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system, world } from "@minecraft/server";
 import { ADMIN_TAG } from "../config.js";
 import { openCraft } from "./crafting.js";
-import { allCupboards, cupboardsAt } from "./toolCupboard.js";
+import { allCupboards, cupboardsAt, removeCupboard } from "./toolCupboard.js";
 
 const HELP = `§6==== RustCraft ====§r
 §eРесурсы:§r бейте залежи (камень, металл, сера) киркой, деревья — топором.
@@ -95,7 +95,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry: reg }) => {
         for (const id of world.getDynamicPropertyIds()) {
           if (/^(tc|hp|bag|cell)\|/.test(id)) world.setDynamicProperty(id, undefined);
         }
-        allCupboards().clear();
+        for (const key of [...allCupboards().keys()]) removeCupboard(key);
         world.sendMessage("§c[RustCraft] Вайп данных выполнен.");
       });
       return ok();

@@ -5,7 +5,7 @@
 import { system, world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
 import { ADMIN_TAG, TC } from "../config.js";
-import { actionbar, posKey, parseKey, readJSON, showForm, writeJSON } from "../lib/util.js";
+import { actionbar, posKey, parseKey, readJSON, showForm, useHandlers, writeJSON } from "../lib/util.js";
 
 const PREFIX = "tc|";
 const TC_ID = "rust:tool_cupboard";
@@ -16,6 +16,13 @@ const RAID_ITEMS = new Set(["rust:c4", "rust:satchel_charge"]);
 
 /** @type {Map<string, {owner: string, auth: string[]}>} */
 const cupboards = new Map();
+// разобранные координаты шкафов, чтобы не парсить строку на каждой проверке
+const coords = new Map();
+const coordsOf = (key) => {
+  let c = coords.get(key);
+  if (!c) coords.set(key, (c = parseKey(key)));
+  return c;
+};
 
 world.afterEvents.worldLoad.subscribe(() => {
   for (const id of world.getDynamicPropertyIds()) {
@@ -32,6 +39,7 @@ function save(key) {
 
 export function removeCupboard(key) {
   cupboards.delete(key);
+  coords.delete(key);
   world.setDynamicProperty(PREFIX + key, undefined);
 }
 
@@ -43,7 +51,7 @@ export function allCupboards() {
 export function cupboardsAt(dimId, pos) {
   const out = [];
   for (const [key, data] of cupboards) {
-    const c = parseKey(key);
+    const c = coordsOf(key);
     if (c.dim !== dimId) continue;
     if (Math.abs(c.x - Math.floor(pos.x)) > TC.radius) continue;
     if (Math.abs(c.z - Math.floor(pos.z)) > TC.radius) continue;
@@ -94,12 +102,21 @@ world.beforeEvents.playerBreakBlock.subscribe((ev) => {
 
 world.beforeEvents.playerInteractWithBlock.subscribe((ev) => {
   const { player, block, itemStack } = ev;
-  if (block.typeId === TC_ID) return; // к шкафу доступ есть у всех, кто до него добрался
   const dimId = block.dimension.id;
   if (itemStack && RAID_ITEMS.has(itemStack.typeId)) return;
-  if (canBuild(player, dimId, block.location) && canBuild(player, dimId, faceTarget(block, ev.blockFace))) return;
+  const target = faceTarget(block, ev.blockFace);
+  if (block.typeId === TC_ID) {
+    // открыть шкаф может любой, кто до него добрался; а вот поставить блок вплотную (присев) — только с правами
+    if (!(player.isSneaking && itemStack) || canBuild(player, dimId, target)) return;
+  } else if (canBuild(player, dimId, block.location) && canBuild(player, dimId, target)) {
+    return;
+  }
   ev.cancel = true;
-  if (ev.isFirstEvent) deny(player, "§cЗакрыто: нет авторизации в шкафу");
+  if (!ev.isFirstEvent) return;
+  // блок не трогаем, но оружие/бинт/меню крафта в руке всё равно срабатывают
+  const use = itemStack && useHandlers.get(itemStack.typeId);
+  if (use) system.run(() => use(player));
+  else deny(player, "§cЗакрыто: нет авторизации в шкафу");
 });
 
 // Регистрируем шкаф и его владельца после установки

@@ -7,6 +7,8 @@ import { cupboardsAt } from "./toolCupboard.js";
 
 const CELL_PREFIX = "cell|";
 const GROUND = new Set(SPAWNER.ground);
+const PLANT =
+  /short_grass|tall_grass|fern|flower|dandelion|poppy|tulip|orchid|allium|bluet|daisy|cornflower|lily_of_the_valley|bush|sapling|snow_layer|leaf_litter|wildflowers|pink_petals|deadbush/;
 const WEIGHTS = Object.entries(SPAWNER.weights);
 const TOTAL_WEIGHT = WEIGHTS.reduce((s, [, w]) => s + w, 0);
 
@@ -45,24 +47,45 @@ function trySpawnNear(player) {
     return;
   }
   if (!dim.isChunkLoaded({ x, y: player.location.y, z })) return; // не трогаем незагруженные чанки
-  let top;
-  try {
-    top = dim.getTopmostBlock({ x, z });
-  } catch {
-    return;
-  }
-  if (!top || !GROUND.has(top.typeId)) return;
-  const above = top.above();
-  if (!above?.isAir) return;
-  if (cupboardsAt(dim.id, above.location).length) return; // не спавним в базах
-  above.setType(pickType());
+  const spot = findSpot(dim, x, z);
+  if (!spot) return;
+  if (cupboardsAt(dim.id, spot.location).length) return; // не спавним в базах
+  spot.setType(pickType());
   world.setDynamicProperty(key, count + 1);
+}
+
+// Самый верхний блок часто не земля, а трава, цветок или снег — спускаемся сквозь них.
+// Возвращает блок, куда поставить залежь (воздух или растение над землёй), либо undefined.
+export function findSpot(dim, x, z) {
+  let block;
+  try {
+    block = dim.getTopmostBlock({ x, z });
+  } catch {
+    return undefined;
+  }
+  for (let i = 0; i < 3 && block; i++) {
+    if (block.isLiquid || block.isWaterlogged) return undefined;
+    if (GROUND.has(block.typeId)) break;
+    if (!PLANT.test(block.typeId)) return undefined; // листва, постройки и т.п.
+    block = block.below();
+  }
+  if (!block || !GROUND.has(block.typeId)) return undefined;
+  const spot = block.above();
+  if (!spot || spot.isLiquid || !(spot.isAir || PLANT.test(spot.typeId))) return undefined;
+  // двойная высокая трава: верхняя половина тоже убирается вместе с нижней
+  const up = spot.above();
+  if (up && PLANT.test(up.typeId)) up.setType("minecraft:air");
+  return spot;
 }
 
 system.runInterval(() => {
   for (const player of world.getPlayers()) {
     if (player.dimension.id !== "minecraft:overworld") continue;
-    for (let i = 0; i < SPAWNER.attemptsPerPlayer; i++) trySpawnNear(player);
+    for (let i = 0; i < SPAWNER.attemptsPerPlayer; i++) {
+      try {
+        trySpawnNear(player);
+      } catch {} // чанк на границе прогрузки — просто пропускаем попытку
+    }
   }
 }, SPAWNER.intervalTicks);
 

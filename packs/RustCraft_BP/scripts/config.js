@@ -177,15 +177,54 @@ export const SPAWN = {
 
 // ---------------------------------------------------------------- Мобы
 // Эти мобы удаляются: не появляются сами и исчезают, если всё же возникли
-// (из структур, превращения зомби в воде, старых чанков). В воде остаются только рыбы.
+// (из структур, превращений, рейдов, старых чанков).
 export const BANNED_MOBS = [
+  // нечисть в воде (в воде остаются только рыбы)
   "minecraft:drowned",
   "minecraft:guardian",
   "minecraft:elder_guardian",
   "minecraft:squid",
   "minecraft:glow_squid",
   "minecraft:dolphin",
+  // скелеты всех видов
+  "minecraft:skeleton",
+  "minecraft:stray",
+  "minecraft:bogged",
+  "minecraft:wither_skeleton",
+  // криперы и ведьмы
+  "minecraft:creeper",
+  "minecraft:witch",
+  // разбойники и вся их банда (патрули, рейды, особняки)
+  "minecraft:pillager",
+  "minecraft:vindicator",
+  "minecraft:evocation_illager",
+  "minecraft:vex",
+  "minecraft:ravager",
 ];
+
+// ---------------------------------------------------------------- Запрещённые блоки и предметы
+// Нельзя поставить, нельзя использовать, а из инвентаря они исчезают (скрафтил, нашёл, выкопал).
+// Это блоки, которые ломают геймплей в стиле Rust:
+//  - обсидиан и т.п. не берёт ни C4, ни сумка -> база становится нерейдабельной;
+//  - эндер-сундук и шалкеры позволяют прятать лут так, что его нельзя зарейдить;
+//  - TNT бесполезен (постройки ломаются только C4/сумкой) и только путает игроков.
+export const BANNED_ITEMS = [
+  "minecraft:tnt",
+  "minecraft:tnt_minecart",
+  "minecraft:obsidian",
+  "minecraft:crying_obsidian",
+  "minecraft:ender_chest",
+  "minecraft:respawn_anchor",
+  "minecraft:enchanting_table",
+  "minecraft:anvil",
+  "minecraft:chipped_anvil",
+  "minecraft:damaged_anvil",
+  "minecraft:netherite_block",
+  "minecraft:end_crystal",
+  "minecraft:beacon",
+];
+// Любые шалкеры (всех цветов)
+export const BANNED_ITEM_PATTERNS = [/^minecraft:.*shulker_box$/];
 
 // ---------------------------------------------------------------- Оружие
 // speed — скорость пули (урон стрелы зависит от скорости), cooldown — в тиках
@@ -200,6 +239,12 @@ export const GUNS = {
     sound: "random.explode",
   },
   sar: { ammo: "rust:rifle_ammo", speed: 4.6, pellets: 1, spread: 0.3, cooldown: 6, sound: "firework.large_blast" },
+};
+
+// Медицина: сколько HP лечит сразу и сколько секунд регенерации
+export const HEALS = {
+  "rust:bandage": { amount: 4, regen: 0 },
+  "rust:syringe": { amount: 8, regen: 5 },
 };
 
 // ---------------------------------------------------------------- Переработчик

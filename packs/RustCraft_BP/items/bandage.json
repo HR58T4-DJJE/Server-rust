@@ -17,10 +17,7 @@
         "value": "Бинт"
       },
       "minecraft:max_stack_size": 16,
-      "rust:heal": {
-        "amount": 4,
-        "regen": 0
-      }
+      "rust:heal": {}
     }
   }
 }

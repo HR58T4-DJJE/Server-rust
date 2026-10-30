@@ -8,10 +8,12 @@ system.runInterval(() => {
   const now = system.currentTick;
   for (const player of world.getPlayers()) {
     if (now - (lastMessageTick.get(player.id) ?? -1000) < 40) continue; // не перебиваем свежие сообщения
-    const status = zoneStatus(player);
-    if (status === "none") continue;
-    player.onScreenDisplay.setActionBar(
-      status === "allowed" ? "§aСтроительство разрешено" : "§cСтроительство запрещено"
-    );
+    try {
+      const status = zoneStatus(player);
+      if (status === "none") continue;
+      player.onScreenDisplay.setActionBar(
+        status === "allowed" ? "§aСтроительство разрешено" : "§cСтроительство запрещено"
+      );
+    } catch {} // игрок вышел в этот же тик
   }
 }, TC.hudIntervalTicks);

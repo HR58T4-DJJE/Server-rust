@@ -17,10 +17,7 @@
         "value": "Медицинский шприц"
       },
       "minecraft:max_stack_size": 8,
-      "rust:heal": {
-        "amount": 8,
-        "regen": 5
-      }
+      "rust:heal": {}
     }
   }
 }

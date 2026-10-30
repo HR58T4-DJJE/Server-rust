@@ -94,7 +94,11 @@ world.beforeEvents.explosion.subscribe((ev) => {
 
 // Сломал руками — забываем сохранённое HP
 world.afterEvents.playerBreakBlock.subscribe(({ block, brokenBlockPermutation }) => {
-  if (maxHp(brokenBlockPermutation.type.id)) clearHp(block.dimension, block.location);
+  const typeId = brokenBlockPermutation.type.id;
+  if (!maxHp(typeId)) return;
+  clearHp(block.dimension, block.location);
+  // дверь могли сломать за верхнюю половину — HP хранится на нижней
+  if (isDoor(typeId)) clearHp(block.dimension, { x: block.x, y: block.y - 1, z: block.z });
 });
 
 system.beforeEvents.startup.subscribe(({ blockComponentRegistry }) => {

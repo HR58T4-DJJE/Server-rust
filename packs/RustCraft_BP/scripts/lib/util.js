@@ -109,6 +109,21 @@ export function consumeHeld(player, n = 1) {
   } else inv.setItem(slot);
 }
 
+// Защита от двойного срабатывания: true, если с прошлого раза прошло не меньше ticks
+const onceMap = new Map();
+export function once(player, key, ticks) {
+  const now = system.currentTick;
+  const id = `${player.id}|${key}`;
+  if (now < (onceMap.get(id) ?? 0)) return false;
+  onceMap.set(id, now + ticks);
+  return true;
+}
+
+// Предметы, которые «используются» (оружие, бинт, меню крафта). Если игрок нажал ими по блоку
+// в чужой зоне шкафа, сам блок не трогаем, но предмет срабатывает: стрелять и лечиться можно везде.
+/** @type {Map<string, (player: import("@minecraft/server").Player) => void>} */
+export const useHandlers = new Map();
+
 // Когда игроку последний раз показали важное сообщение (HUD шкафа его не перебивает)
 export const lastMessageTick = new Map();
 

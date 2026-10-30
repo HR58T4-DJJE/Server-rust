@@ -1,9 +1,9 @@
 // Плагин «Крафт»: меню крафта как в Rust (книга «Меню крафта» или нажатие на верстак).
 // Чем выше уровень ближайшего верстака, тем больше рецептов открыто.
-import { system } from "@minecraft/server";
+import { ItemStack, system, world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
 import { CATEGORIES, RECIPES, RESULT_NAMES, iconOf } from "../recipes.js";
-import { actionbar, costText, giveItem, hasCost, showForm, takeCost } from "../lib/util.js";
+import { actionbar, costText, giveItem, hasCost, once, showForm, takeCost, useHandlers } from "../lib/util.js";
 
 const WB = /^rust:workbench_(\d)$/;
 
@@ -21,6 +21,25 @@ export function nearbyWorkbench(player) {
       }
   return best;
 }
+
+// Проверка, что предмет существует (иначе ресурсы списались бы впустую)
+const validCache = new Map();
+function validItem(id) {
+  if (!validCache.has(id)) {
+    try {
+      new ItemStack(id, 1);
+      validCache.set(id, true);
+    } catch {
+      validCache.set(id, false);
+    }
+  }
+  return validCache.get(id);
+}
+
+world.afterEvents.worldLoad.subscribe(() => {
+  const bad = RECIPES.flatMap((r) => [r.id, ...Object.keys(r.cost)]).filter((id) => !validItem(id));
+  if (bad.length) console.error(`[RustCraft] Неизвестные предметы в рецептах: ${[...new Set(bad)].join(", ")}`);
+});
 
 const tierLabel = (t) => (t ? `Верстак ${t}` : "без верстака");
 
@@ -50,6 +69,8 @@ function openCategory(player, tier, cat) {
     if (!r) return openCraft(player, tier);
     if (r.wb > tier) {
       actionbar(player, `§cНужен верстак ${r.wb} уровня`);
+    } else if (!validItem(r.id)) {
+      actionbar(player, "§cЭтот рецепт сломан — сообщите администратору");
     } else if (!takeCost(player, r.cost)) {
       actionbar(player, `§cНе хватает: ${costText(r.cost, player)}`);
     } else {
@@ -67,9 +88,13 @@ system.beforeEvents.startup.subscribe(({ blockComponentRegistry, itemComponentRe
       if (ev.player) openCraft(ev.player, Math.max(params.tier ?? 1, nearbyWorkbench(ev.player)));
     },
   });
+  // книга открывается и при нажатии в воздух, и при нажатии по блоку
+  const openBook = (player) => {
+    if (player?.typeId === "minecraft:player" && once(player, "craft_book", 10)) openCraft(player);
+  };
+  useHandlers.set("rust:craft_book", openBook);
   itemComponentRegistry.registerCustomComponent("rust:craft_book", {
-    onUse(ev) {
-      openCraft(ev.source);
-    },
+    onUse: (ev) => openBook(ev.source),
+    onUseOn: (ev) => openBook(ev.source),
   });
 });

@@ -56,20 +56,17 @@ function findGround(dim, x, z) {
   return block.y + 1;
 }
 
+// Вода в радиусе 3 блоков — место не подходит (чтобы не появляться на кромке пруда или моря)
 function nearWater(dim, x, z) {
-  for (const [dx, dz] of [
-    [3, 0],
-    [-3, 0],
-    [0, 3],
-    [0, -3],
-    [2, 2],
-    [-2, -2],
-  ]) {
-    try {
-      const top = dim.getTopmostBlock({ x: x + dx, z: z + dz });
-      if (!top || top.isLiquid || top.isWaterlogged) return true;
-    } catch {
-      return true;
+  for (let dx = -3; dx <= 3; dx++) {
+    for (let dz = -3; dz <= 3; dz++) {
+      try {
+        // getTopmostBlock пропускает воду и возвращает дно, поэтому смотрим и блок над ним
+        const top = dim.getTopmostBlock({ x: x + dx, z: z + dz });
+        if (!top || top.isLiquid || top.isWaterlogged || top.above()?.isLiquid) return true;
+      } catch {
+        return true;
+      }
     }
   }
   return false;
@@ -124,10 +121,17 @@ function scout(replace) {
   let waited = 0;
   const handle = system.runInterval(() => {
     waited++;
-    const loaded = areaLoaded(dim, cx, cz);
-    if (!loaded && waited < 30) return;
+    let point;
+    try {
+      const loaded = areaLoaded(dim, cx, cz);
+      if (!loaded && waited < 30) return;
+      point = loaded ? pickPoint(dim, cx, cz) : undefined;
+    } catch {
+      // чанк загружен, но ещё не «тикает» — подождём, а не сломаем поиск
+      if (waited < 30) return;
+    }
+    // сюда доходим ровно один раз: поиск закончен (успешно или нет), освобождаем зону
     system.clearRun(handle);
-    const point = loaded ? pickPoint(dim, cx, cz) : undefined;
     cmd(dim, `tickingarea remove ${AREA}`);
     scouting = false;
     if (!point) return;
@@ -174,7 +178,12 @@ export function teleportToSpawnPoint(player, tries = 0) {
   // после загрузки чанка убеждаемся, что место всё ещё нормальное (могли застроить или залить водой)
   system.runTimeout(() => {
     if (!player.isValid || !dim.isChunkLoaded(point)) return;
-    const y = findGround(dim, point.x, point.z);
+    let y;
+    try {
+      y = findGround(dim, point.x, point.z);
+    } catch {
+      return; // чанк ещё не готов — игрок уже стоит на проверенной точке
+    }
     if (y === undefined) {
       pool = pool.filter((p) => p !== point);
       savePool();

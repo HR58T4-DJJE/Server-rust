@@ -3,14 +3,18 @@
 import { system, world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
 import { SPAWN } from "../config.js";
-import { actionbar, giveItem, parseKey, posKey, readJSON, showForm, writeJSON } from "../lib/util.js";
+import { actionbar, countItem, dist2, giveItem, parseKey, posKey, readJSON, showForm, writeJSON } from "../lib/util.js";
 import { teleportToSpawnPoint } from "./spawnPoints.js";
 
 const BAG_PREFIX = "bag|";
 const BAG_ID = "rust:sleeping_bag";
 
+// Докладывает набор до нужного количества (книги и камни не копятся при каждой смерти)
 function giveKit(player, kit) {
-  for (const [id, n] of kit) giveItem(player, id, n);
+  for (const [id, n] of kit) {
+    const missing = n - countItem(player, id);
+    if (missing > 0) giveItem(player, id, missing);
+  }
 }
 
 // ---------------------------------------------------------------- случайный спавн
@@ -68,7 +72,11 @@ function respawnMenu(player) {
     player.teleport({ x: p.x + 0.5, y: p.y + 0.3, z: p.z + 0.5 }, { dimension: world.getDimension(p.dim) });
     // проверяем, что спальник ещё на месте (чанк загрузится после телепорта)
     system.runTimeout(() => {
-      const block = player.dimension.getBlock(p);
+      if (!player.isValid) return;
+      let block;
+      try {
+        block = player.dimension.getBlock(p);
+      } catch {} // чанк ещё грузится — спальник проверим в следующий раз
       if (block && block.typeId !== BAG_ID) {
         world.setDynamicProperty(BAG_PREFIX + key, undefined);
         actionbar(player, "§cСпальник уничтожен");
@@ -97,8 +105,10 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
     return;
   }
   giveKit(player, SPAWN.respawnKit);
-  // кровать (ванильная точка возрождения) имеет приоритет над случайным спавном
-  if (player.getSpawnPoint()) return;
+  // кровать (ванильная точка возрождения) имеет приоритет над случайным спавном,
+  // но только если игрок действительно появился у неё (кровать могли сломать)
+  const bed = player.getSpawnPoint();
+  if (bed && bed.dimension.id === player.dimension.id && dist2(bed, player.location) < 16) return;
   respawnMenu(player);
 });
 
