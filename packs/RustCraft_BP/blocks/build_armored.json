@@ -22,6 +22,9 @@
       "minecraft:destructible_by_explosion": {
         "explosion_resistance": 1200
       },
+      "minecraft:movable": {
+        "movement_type": "immovable"
+      },
       "minecraft:loot": "loot_tables/empty.json",
       "tag:rust_building": {},
       "minecraft:map_color": "#3c4044"

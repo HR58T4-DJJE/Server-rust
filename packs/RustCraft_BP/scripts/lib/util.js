@@ -1,4 +1,4 @@
-import { ItemStack, system } from "@minecraft/server";
+import { ItemStack, system, world } from "@minecraft/server";
 import { FormCancelationReason } from "@minecraft/server-ui";
 
 // Русские названия для меню и сообщений
@@ -126,6 +126,12 @@ export const useHandlers = new Map();
 
 // Когда игроку последний раз показали важное сообщение (HUD шкафа его не перебивает)
 export const lastMessageTick = new Map();
+
+// Вышедший игрок больше не держит записи в памяти (сервер может работать неделями)
+world.afterEvents.playerLeave.subscribe(({ playerId }) => {
+  lastMessageTick.delete(playerId);
+  for (const key of onceMap.keys()) if (key.startsWith(`${playerId}|`)) onceMap.delete(key);
+});
 
 export function actionbar(player, text) {
   lastMessageTick.set(player.id, system.currentTick);

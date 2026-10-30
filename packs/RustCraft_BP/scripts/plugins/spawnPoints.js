@@ -80,16 +80,24 @@ function isGoodSpot(dim, x, z) {
   return y;
 }
 
-function pickPoint(dim, cx, cz) {
+// Перебор кандидатов растянут на несколько тиков (по одному кандидату за тик),
+// чтобы поиск точки не создавал микрофризов для игроков.
+function* pickPointJob(dim, cx, cz, out) {
   const tries = [[0, 0]];
   for (let i = 0; i < 20; i++) tries.push([Math.floor(Math.random() * 25) - 12, Math.floor(Math.random() * 25) - 12]);
   for (const [dx, dz] of tries) {
     const x = cx + dx;
     const z = cz + dz;
-    const y = isGoodSpot(dim, x, z);
-    if (y !== undefined) return { x, y, z };
+    let y;
+    try {
+      y = isGoodSpot(dim, x, z);
+    } catch {} // чанк ещё не готов — пропускаем кандидата
+    if (y !== undefined) {
+      out.point = { x, y, z };
+      return;
+    }
+    yield;
   }
-  return undefined;
 }
 
 function areaLoaded(dim, cx, cz) {
@@ -118,26 +126,34 @@ function scout(replace) {
     scouting = false;
     return;
   }
-  let waited = 0;
-  const handle = system.runInterval(() => {
-    waited++;
-    let point;
-    try {
-      const loaded = areaLoaded(dim, cx, cz);
-      if (!loaded && waited < 30) return;
-      point = loaded ? pickPoint(dim, cx, cz) : undefined;
-    } catch {
-      // чанк загружен, но ещё не «тикает» — подождём, а не сломаем поиск
-      if (waited < 30) return;
-    }
-    // сюда доходим ровно один раз: поиск закончен (успешно или нет), освобождаем зону
-    system.clearRun(handle);
+  const finish = (point) => {
     cmd(dim, `tickingarea remove ${AREA}`);
     scouting = false;
     if (!point) return;
     if (replace && pool.length) pool[Math.floor(Math.random() * pool.length)] = point;
     else pool.push(point);
     savePool();
+  };
+  let waited = 0;
+  const handle = system.runInterval(() => {
+    waited++;
+    let loaded = false;
+    try {
+      loaded = areaLoaded(dim, cx, cz);
+    } catch {}
+    if (!loaded && waited < 30) return;
+    system.clearRun(handle);
+    if (!loaded) return finish(undefined); // участок так и не загрузился — попробуем другой
+    const out = {};
+    system.runJob(
+      (function* () {
+        try {
+          yield* pickPointJob(dim, cx, cz, out);
+        } finally {
+          finish(out.point); // вызывается всегда, даже при ошибке, — поиск не «застрянет»
+        }
+      })()
+    );
   }, 20);
 }
 

@@ -42,6 +42,9 @@
       "minecraft:destructible_by_explosion": {
         "explosion_resistance": 1200
       },
+      "minecraft:movable": {
+        "movement_type": "immovable"
+      },
       "rust:tool_cupboard": {},
       "minecraft:map_color": "#a27848",
       "tag:wood": {}

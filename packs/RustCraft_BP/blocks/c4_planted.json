@@ -20,6 +20,9 @@
       "minecraft:destructible_by_explosion": {
         "explosion_resistance": 3600000
       },
+      "minecraft:movable": {
+        "movement_type": "immovable"
+      },
       "minecraft:loot": "loot_tables/empty.json",
       "rust:charge": {
         "type": "c4"

@@ -30,6 +30,9 @@
       "minecraft:destructible_by_explosion": {
         "explosion_resistance": 6
       },
+      "minecraft:movable": {
+        "movement_type": "immovable"
+      },
       "rust:workbench": {
         "tier": 2
       },

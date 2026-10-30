@@ -23,26 +23,47 @@ function randomSpawn(player) {
 }
 
 // ---------------------------------------------------------------- спальники
-function bagsOf(player) {
-  const out = [];
+// Спальники держим в памяти (key -> {owner, last}), чтобы не перебирать всё хранилище мира
+/** @type {Map<string, {owner: string, last: number}>} */
+const bags = new Map();
+
+world.afterEvents.worldLoad.subscribe(() => {
   for (const id of world.getDynamicPropertyIds()) {
     if (!id.startsWith(BAG_PREFIX)) continue;
     const data = readJSON(world, id);
-    if (data?.owner === player.name) out.push({ key: id.slice(BAG_PREFIX.length), data });
+    if (data) bags.set(id.slice(BAG_PREFIX.length), data);
   }
+});
+
+function saveBag(key, data) {
+  bags.set(key, data);
+  writeJSON(world, BAG_PREFIX + key, data);
+}
+
+function removeBag(key) {
+  bags.delete(key);
+  world.setDynamicProperty(BAG_PREFIX + key, undefined);
+}
+
+export function clearBags() {
+  for (const key of [...bags.keys()]) removeBag(key);
+}
+
+function bagsOf(player) {
+  const out = [];
+  for (const [key, data] of bags) if (data.owner === player.name) out.push({ key, data });
   return out;
 }
 
 world.afterEvents.playerPlaceBlock.subscribe(({ player, block }) => {
   if (block.typeId !== BAG_ID) return;
-  const bags = bagsOf(player);
-  if (bags.length >= SPAWN.maxBags) {
+  if (bagsOf(player).length >= SPAWN.maxBags) {
     block.setType("minecraft:air");
     giveItem(player, BAG_ID, 1);
     return actionbar(player, `§cМаксимум спальников: ${SPAWN.maxBags}`);
   }
   const key = posKey(block.dimension.id, block.location);
-  writeJSON(world, BAG_PREFIX + key, { owner: player.name, last: 0 });
+  saveBag(key, { owner: player.name, last: 0 });
   actionbar(player, "§aСпальник установлен — после смерти можно будет возродиться здесь");
 });
 
@@ -51,18 +72,18 @@ function bagCooldownLeft(data) {
 }
 
 function respawnMenu(player) {
-  const bags = bagsOf(player);
-  if (!bags.length) return randomSpawn(player);
+  const mine = bagsOf(player);
+  if (!mine.length) return randomSpawn(player);
   const form = new ActionFormData().title("Возрождение").body("Где возродиться?");
   form.button("Случайное место", "textures/ui/World");
-  for (const { key, data } of bags) {
+  for (const { key, data } of mine) {
     const p = parseKey(key);
     const cd = bagCooldownLeft(data);
     form.button(`Спальник ${p.x}, ${p.y}, ${p.z}\n${cd ? `§cперезарядка ${cd} с` : "§2готов"}`, "textures/blocks/rust_sleeping_bag");
   }
   showForm(player, form).then((res) => {
     if (!res || res.canceled || res.selection === 0) return randomSpawn(player);
-    const { key, data } = bags[res.selection - 1];
+    const { key, data } = mine[res.selection - 1];
     const cd = bagCooldownLeft(data);
     if (cd) {
       actionbar(player, `§cСпальник перезаряжается: ${cd} с`);
@@ -78,12 +99,12 @@ function respawnMenu(player) {
         block = player.dimension.getBlock(p);
       } catch {} // чанк ещё грузится — спальник проверим в следующий раз
       if (block && block.typeId !== BAG_ID) {
-        world.setDynamicProperty(BAG_PREFIX + key, undefined);
+        removeBag(key);
         actionbar(player, "§cСпальник уничтожен");
         randomSpawn(player);
         return;
       }
-      writeJSON(world, BAG_PREFIX + key, { ...data, last: Date.now() });
+      if (bags.has(key)) saveBag(key, { ...data, last: Date.now() });
     }, 10);
   });
 }
@@ -115,14 +136,14 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
 system.beforeEvents.startup.subscribe(({ blockComponentRegistry }) => {
   blockComponentRegistry.registerCustomComponent("rust:sleeping_bag", {
     onPlayerInteract(ev) {
-      const data = readJSON(world, BAG_PREFIX + posKey(ev.dimension.id, ev.block.location));
+      const data = bags.get(posKey(ev.dimension.id, ev.block.location));
       if (!ev.player) return;
       if (!data) return actionbar(ev.player, "§7Ничей спальник");
       const cd = bagCooldownLeft(data);
       actionbar(ev.player, `§7Спальник игрока §f${data.owner}§7${cd ? `, перезарядка ${cd} с` : ""}`);
     },
     onBreak(ev) {
-      world.setDynamicProperty(BAG_PREFIX + posKey(ev.dimension.id, ev.block.location), undefined);
+      removeBag(posKey(ev.dimension.id, ev.block.location));
     },
   });
 });

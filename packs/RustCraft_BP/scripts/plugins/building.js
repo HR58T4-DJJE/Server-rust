@@ -1,9 +1,9 @@
 // Плагин «Строительство»: киянка улучшает постройки
 // солома -> дерево -> камень -> листовой металл -> МВК, а также чинит их после рейда.
-import { system } from "@minecraft/server";
+import { system, world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
 import { REPAIR_MATERIAL, UPGRADES } from "../config.js";
-import { actionbar, costText, nameOf, showForm, takeCost } from "../lib/util.js";
+import { actionbar, costText, nameOf, once, showForm, takeCost } from "../lib/util.js";
 import { canBuild } from "./toolCupboard.js";
 import { clearHp, getHp, hpAnchor, maxHp, setHp } from "./raid.js";
 
@@ -16,7 +16,24 @@ const TIER_NAMES = {
   "rust:tool_cupboard": "Шкаф",
 };
 
+const blockName = (typeId) =>
+  TIER_NAMES[typeId] ?? (/door$/.test(typeId) ? (typeId.includes("iron") ? "Металлическая дверь" : "Дверь") : nameOf(typeId));
+
+// Удар по постройке или двери показывает её прочность, как в Rust
+world.afterEvents.entityHitBlock.subscribe(({ damagingEntity, hitBlock }) => {
+  if (damagingEntity?.typeId !== "minecraft:player") return;
+  try {
+    if (!maxHp(hitBlock.typeId) || !once(damagingEntity, "hp_view", 4)) return;
+    const block = hpAnchor(hitBlock);
+    const hp = Math.ceil(getHp(block));
+    const max = maxHp(block.typeId);
+    const color = hp > max * 0.6 ? "§a" : hp > max * 0.3 ? "§e" : "§c";
+    actionbar(damagingEntity, `§7${blockName(block.typeId)}: ${color}${hp}§7 / ${max}`);
+  } catch {}
+});
+
 const lastUse = new Map();
+world.afterEvents.playerLeave.subscribe(({ playerId }) => lastUse.delete(playerId));
 
 function openHammer(player, block) {
   block = hpAnchor(block);
@@ -27,7 +44,7 @@ function openHammer(player, block) {
     return actionbar(player, "§cНужна авторизация в шкафу");
 
   const hp = getHp(block);
-  const name = TIER_NAMES[typeId] ?? nameOf(typeId);
+  const name = blockName(typeId);
   const up = UPGRADES[typeId];
   const repairMat = REPAIR_MATERIAL[typeId];
   const missing = max - hp;

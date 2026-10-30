@@ -222,9 +222,38 @@ export const BANNED_ITEMS = [
   "minecraft:netherite_block",
   "minecraft:end_crystal",
   "minecraft:beacon",
+  // телепорт сквозь стены баз — обход шкафа и дверей без рейда
+  "minecraft:ender_pearl",
+  "minecraft:chorus_fruit",
 ];
 // Любые шалкеры (всех цветов)
 export const BANNED_ITEM_PATTERNS = [/^minecraft:.*shulker_box$/];
+
+// ---------------------------------------------------------------- Защита от лагов
+export const LAG = {
+  sweepIntervalTicks: 20 * 60, // раз в минуту проверять скопления сущностей
+  // лимиты на один чанк (16x16): лишнее удаляется
+  maxItemsPerChunk: 64, // выпавшие предметы
+  maxXpPerChunk: 40, // сферы опыта
+  maxAnimalsPerChunk: 24, // фермы животных (с именем или приручённые не трогаются)
+  animals: [
+    "minecraft:cow",
+    "minecraft:mooshroom",
+    "minecraft:sheep",
+    "minecraft:pig",
+    "minecraft:chicken",
+    "minecraft:rabbit",
+    "minecraft:goat",
+    "minecraft:llama",
+    "minecraft:horse",
+    "minecraft:donkey",
+    "minecraft:mule",
+    "minecraft:camel",
+    "minecraft:armadillo",
+    "minecraft:frog",
+  ],
+  tpsWarn: 15, // если TPS ниже — предупреждение в консоль с причинами
+};
 
 // ---------------------------------------------------------------- Оружие
 // speed — скорость пули (урон стрелы зависит от скорости), cooldown — в тиках

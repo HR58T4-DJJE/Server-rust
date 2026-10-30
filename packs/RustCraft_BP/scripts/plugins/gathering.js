@@ -14,15 +14,33 @@ const TOTAL_WEIGHT = WEIGHTS.reduce((s, [, w]) => s + w, 0);
 
 const cellKey = (x, z) => `${CELL_PREFIX}${Math.floor(x / SPAWNER.cellSize)}|${Math.floor(z / SPAWNER.cellSize)}`;
 
+// Счётчики клеток кэшируются в памяти; в хранилище мира пишем только изменения
+/** @type {Map<string, number>} */
+const cells = new Map();
+
 function cellCount(key) {
-  const v = world.getDynamicProperty(key);
-  return typeof v === "number" ? v : 0;
+  let n = cells.get(key);
+  if (n === undefined) {
+    const v = world.getDynamicProperty(key);
+    n = typeof v === "number" ? v : 0;
+    cells.set(key, n);
+  }
+  return n;
+}
+
+function setCell(key, n) {
+  n = Math.max(0, n);
+  cells.set(key, n);
+  world.setDynamicProperty(key, n === 0 ? undefined : n);
 }
 
 function changeCell(x, z, delta) {
   const key = cellKey(x, z);
-  const n = Math.max(0, cellCount(key) + delta);
-  world.setDynamicProperty(key, n === 0 ? undefined : n);
+  setCell(key, cellCount(key) + delta);
+}
+
+export function clearCellCache() {
+  cells.clear();
 }
 
 function pickType() {
@@ -43,7 +61,7 @@ function trySpawnNear(player) {
   const count = cellCount(key);
   if (count >= SPAWNER.maxPerCell) {
     // самовосстановление счётчика, если залежи пропали не через добычу
-    if (Math.random() < 0.02) world.setDynamicProperty(key, count - 1);
+    if (Math.random() < 0.02) setCell(key, count - 1);
     return;
   }
   if (!dim.isChunkLoaded({ x, y: player.location.y, z })) return; // не трогаем незагруженные чанки
@@ -51,7 +69,7 @@ function trySpawnNear(player) {
   if (!spot) return;
   if (cupboardsAt(dim.id, spot.location).length) return; // не спавним в базах
   spot.setType(pickType());
-  world.setDynamicProperty(key, count + 1);
+  setCell(key, count + 1);
 }
 
 // Самый верхний блок часто не земля, а трава, цветок или снег — спускаемся сквозь них.

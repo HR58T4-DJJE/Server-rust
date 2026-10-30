@@ -9,7 +9,10 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BDS="${BDS_DIR:-$ROOT/server/bds}"
 WORLD="RustCraft"
 
-if [ ! -x "$BDS/bedrock_server" ] || [ "${UPDATE:-0}" = "1" ]; then
+# сервер уже стоит (Linux или Windows-версия) — повторно не качаем, только обновляем аддон
+INSTALLED=0
+{ [ -x "$BDS/bedrock_server" ] || [ -f "$BDS/bedrock_server.exe" ]; } && INSTALLED=1
+if [ "$INSTALLED" = "0" ] || [ "${UPDATE:-0}" = "1" ]; then
   URL="${BDS_URL:-}"
   if [ -z "$URL" ]; then
     URL=$(curl -fsSL https://net-secondary.web.minecraft-services.net/api/v1.0/download/links |

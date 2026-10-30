@@ -40,6 +40,9 @@
       "minecraft:destructible_by_explosion": {
         "explosion_resistance": 3600000
       },
+      "minecraft:movable": {
+        "movement_type": "immovable"
+      },
       "rust:recycler": {},
       "minecraft:map_color": "#4f7a3a"
     },

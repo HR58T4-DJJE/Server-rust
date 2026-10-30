@@ -3,6 +3,10 @@ import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, sy
 import { ADMIN_TAG } from "../config.js";
 import { openCraft } from "./crafting.js";
 import { allCupboards, cupboardsAt, removeCupboard } from "./toolCupboard.js";
+import { clearBags } from "./spawn.js";
+import { clearCellCache } from "./gathering.js";
+import { entitySummary, getTps } from "./lagGuard.js";
+import { spawnPointCount } from "./spawnPoints.js";
 
 const HELP = `§6==== RustCraft ====§r
 §eРесурсы:§r бейте залежи (камень, металл, сера) киркой, деревья — топором.
@@ -12,7 +16,7 @@ const HELP = `§6==== RustCraft ====§r
 §eШкаф:§r защищает зону вокруг базы. Нажмите на него, чтобы авторизоваться.
 §eРейд:§r сумка с зарядом и C4 — единственное, что ломает постройки. Ванильный TNT не работает.
 §eСпальник:§r точка возрождения после смерти.
-§7Команды: /rust:craft, /rust:tc, /rust:info`;
+§7Команды: /rust:craft, /rust:tc, /rust:status, /rust:info`;
 
 function playerOf(origin) {
   const e = origin.sourceEntity ?? origin.initiator;
@@ -69,6 +73,32 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry: reg }) => {
 
   reg.registerCommand(
     {
+      name: "rust:status",
+      description: "Состояние сервера: TPS, игроки, сущности",
+      permissionLevel: CommandPermissionLevel.Any,
+      cheatsRequired: false,
+    },
+    (origin) => {
+      const player = playerOf(origin);
+      system.run(() => {
+        const tps1 = getTps(10);
+        const tps60 = getTps(60);
+        const color = tps1 >= 18 ? "§a" : tps1 >= 15 ? "§e" : "§c";
+        const text =
+          `§6==== Сервер ====§r\n` +
+          `TPS: ${color}${tps1.toFixed(1)}§r (за минуту ${tps60.toFixed(1)}, норма 20)\n` +
+          `Игроков: ${world.getPlayers().length}\n` +
+          `${entitySummary()}\n` +
+          `Шкафов: ${allCupboards().size}, точек спавна: ${spawnPointCount()}`;
+        if (player?.isValid) player.sendMessage(text);
+        else console.warn(text.replace(/§./g, ""));
+      });
+      return ok();
+    }
+  );
+
+  reg.registerCommand(
+    {
       name: "rust:admin",
       description: "Режим администратора: игнорировать шкафы",
       permissionLevel: CommandPermissionLevel.GameDirectors,
@@ -96,6 +126,8 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry: reg }) => {
           if (/^(tc|hp|bag|cell)\|/.test(id)) world.setDynamicProperty(id, undefined);
         }
         for (const key of [...allCupboards().keys()]) removeCupboard(key);
+        clearBags();
+        clearCellCache();
         world.sendMessage("§c[RustCraft] Вайп данных выполнен.");
       });
       return ok();

@@ -43,7 +43,31 @@ world.afterEvents.worldLoad.subscribe(() => {
 
 const tierLabel = (t) => (t ? `Верстак ${t}` : "без верстака");
 
-export function openCraft(player, tier = nearbyWorkbench(player)) {
+// Верстак, у которого открыто меню (запоминаем, чтобы нельзя было открыть меню у верстака 3
+// и уйти крафтить C4 в другое место)
+/** @type {Map<string, {dim: string, x: number, y: number, z: number}>} */
+const openedAt = new Map();
+world.afterEvents.playerLeave.subscribe(({ playerId }) => openedAt.delete(playerId));
+
+/** Уровень верстака, доступный игроку прямо сейчас */
+function currentTier(player) {
+  let tier = nearbyWorkbench(player);
+  const wb = openedAt.get(player.id);
+  if (wb && wb.dim === player.dimension.id) {
+    const dx = player.location.x - (wb.x + 0.5);
+    const dy = player.location.y - wb.y;
+    const dz = player.location.z - (wb.z + 0.5);
+    if (dx * dx + dy * dy + dz * dz <= 36) {
+      try {
+        const m = player.dimension.getBlock(wb)?.typeId.match(WB);
+        if (m) tier = Math.max(tier, +m[1]);
+      } catch {}
+    }
+  }
+  return tier;
+}
+
+export function openCraft(player, tier = currentTier(player)) {
   const form = new ActionFormData()
     .title("Крафт")
     .body(`Доступно: §e${tierLabel(tier)}§r\nПодойдите к верстаку, чтобы открыть больше рецептов.`);
@@ -66,9 +90,10 @@ function openCategory(player, tier, cat) {
   showForm(player, form).then((res) => {
     if (!res || res.canceled) return;
     const r = list[res.selection];
+    tier = currentTier(player); // игрок мог отойти от верстака, пока было открыто меню
     if (!r) return openCraft(player, tier);
     if (r.wb > tier) {
-      actionbar(player, `§cНужен верстак ${r.wb} уровня`);
+      actionbar(player, `§cНужен верстак ${r.wb} уровня рядом с вами`);
     } else if (!validItem(r.id)) {
       actionbar(player, "§cЭтот рецепт сломан — сообщите администратору");
     } else if (!takeCost(player, r.cost)) {
@@ -84,13 +109,18 @@ function openCategory(player, tier, cat) {
 
 system.beforeEvents.startup.subscribe(({ blockComponentRegistry, itemComponentRegistry }) => {
   blockComponentRegistry.registerCustomComponent("rust:workbench", {
-    onPlayerInteract(ev, { params }) {
-      if (ev.player) openCraft(ev.player, Math.max(params.tier ?? 1, nearbyWorkbench(ev.player)));
+    onPlayerInteract(ev) {
+      if (!ev.player) return;
+      const { x, y, z } = ev.block.location;
+      openedAt.set(ev.player.id, { dim: ev.dimension.id, x, y, z });
+      openCraft(ev.player);
     },
   });
   // книга открывается и при нажатии в воздух, и при нажатии по блоку
   const openBook = (player) => {
-    if (player?.typeId === "minecraft:player" && once(player, "craft_book", 10)) openCraft(player);
+    if (player?.typeId !== "minecraft:player" || !once(player, "craft_book", 10)) return;
+    openedAt.delete(player.id); // книга: только верстаки рядом
+    openCraft(player);
   };
   useHandlers.set("rust:craft_book", openBook);
   itemComponentRegistry.registerCustomComponent("rust:craft_book", {

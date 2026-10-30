@@ -12,6 +12,7 @@ import "./plugins/mobs.js"; // запрещённые мобы (вода, ске
 import "./plugins/bannedItems.js"; // запрещённые блоки (обсидиан, эндер-сундук, шалкеры, TNT...)
 import "./plugins/recycler.js"; // переработчик
 import "./plugins/hud.js"; // надпись о зоне шкафа
+import "./plugins/lagGuard.js"; // защита от лагов и монитор TPS
 import "./plugins/commands.js"; // команды /rust:*
 
 console.warn("[RustCraft] Плагины загружены");

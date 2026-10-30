@@ -18,17 +18,28 @@ const RAID_ITEMS = new Set(["rust:c4", "rust:satchel_charge"]);
 const cupboards = new Map();
 // разобранные координаты шкафов, чтобы не парсить строку на каждой проверке
 const coords = new Map();
-const coordsOf = (key) => {
-  let c = coords.get(key);
-  if (!c) coords.set(key, (c = parseKey(key)));
-  return c;
-};
+// Пространственный индекс: участок 64x64 -> шкафы в нём. Проверка зоны смотрит только
+// соседние участки, а не все шкафы мира (важно, когда баз много).
+const REGION = 64;
+/** @type {Map<string, Set<string>>} */
+const regions = new Map();
+const regionKey = (dim, rx, rz) => `${dim}|${rx}|${rz}`;
+
+function addCupboard(key, data) {
+  cupboards.set(key, data);
+  const c = parseKey(key);
+  coords.set(key, c);
+  const rk = regionKey(c.dim, Math.floor(c.x / REGION), Math.floor(c.z / REGION));
+  let set = regions.get(rk);
+  if (!set) regions.set(rk, (set = new Set()));
+  set.add(key);
+}
 
 world.afterEvents.worldLoad.subscribe(() => {
   for (const id of world.getDynamicPropertyIds()) {
     if (!id.startsWith(PREFIX)) continue;
     const data = readJSON(world, id);
-    if (data) cupboards.set(id.slice(PREFIX.length), data);
+    if (data) addCupboard(id.slice(PREFIX.length), data);
   }
   console.warn(`[RustCraft] Загружено шкафов: ${cupboards.size}`);
 });
@@ -38,6 +49,13 @@ function save(key) {
 }
 
 export function removeCupboard(key) {
+  const c = coords.get(key);
+  if (c) {
+    const rk = regionKey(c.dim, Math.floor(c.x / REGION), Math.floor(c.z / REGION));
+    const set = regions.get(rk);
+    set?.delete(key);
+    if (set && !set.size) regions.delete(rk);
+  }
   cupboards.delete(key);
   coords.delete(key);
   world.setDynamicProperty(PREFIX + key, undefined);
@@ -50,13 +68,25 @@ export function allCupboards() {
 /** Шкафы, в зону которых попадает точка */
 export function cupboardsAt(dimId, pos) {
   const out = [];
-  for (const [key, data] of cupboards) {
-    const c = coordsOf(key);
-    if (c.dim !== dimId) continue;
-    if (Math.abs(c.x - Math.floor(pos.x)) > TC.radius) continue;
-    if (Math.abs(c.z - Math.floor(pos.z)) > TC.radius) continue;
-    if (Math.abs(c.y - Math.floor(pos.y)) > TC.height) continue;
-    out.push({ key, data });
+  if (!cupboards.size) return out;
+  const px = Math.floor(pos.x);
+  const py = Math.floor(pos.y);
+  const pz = Math.floor(pos.z);
+  const rx0 = Math.floor((px - TC.radius) / REGION);
+  const rx1 = Math.floor((px + TC.radius) / REGION);
+  const rz0 = Math.floor((pz - TC.radius) / REGION);
+  const rz1 = Math.floor((pz + TC.radius) / REGION);
+  for (let rx = rx0; rx <= rx1; rx++) {
+    for (let rz = rz0; rz <= rz1; rz++) {
+      const set = regions.get(regionKey(dimId, rx, rz));
+      if (!set) continue;
+      for (const key of set) {
+        const c = coords.get(key);
+        if (Math.abs(c.x - px) > TC.radius || Math.abs(c.z - pz) > TC.radius || Math.abs(c.y - py) > TC.height)
+          continue;
+        out.push({ key, data: cupboards.get(key) });
+      }
+    }
   }
   return out;
 }
@@ -123,7 +153,7 @@ world.beforeEvents.playerInteractWithBlock.subscribe((ev) => {
 world.afterEvents.playerPlaceBlock.subscribe(({ player, block }) => {
   if (block.typeId !== TC_ID) return;
   const key = posKey(block.dimension.id, block.location);
-  cupboards.set(key, { owner: player.name, auth: [player.name] });
+  addCupboard(key, { owner: player.name, auth: [player.name] });
   save(key);
   actionbar(player, "§aШкаф установлен. Вы авторизованы.");
   player.sendMessage(
@@ -135,7 +165,7 @@ function openMenu(player, key) {
   const data = cupboards.get(key);
   if (!data) {
     // шкаф поставлен командой /setblock или данные потеряны — берём его себе
-    cupboards.set(key, { owner: player.name, auth: [player.name] });
+    addCupboard(key, { owner: player.name, auth: [player.name] });
     save(key);
     return openMenu(player, key);
   }
