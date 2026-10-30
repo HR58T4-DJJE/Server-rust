@@ -24,6 +24,14 @@ apt-get install -y -qq unzip curl ca-certificates cron >/dev/null || echo "   (�
 chmod +x "$BDS/bedrock_server" "$OPS_DIR"/*.sh
 [ -f "$BDS/start.sh" ] && chmod +x "$BDS/start.sh"
 
+# новый мир — плоский (шаблон из пакета); существующий мир не трогаем
+WDIR="$BDS/worlds/$WORLD"
+if [ ! -d "$WDIR/db" ] && [ ! -f "$WDIR/level.dat" ] && [ -f "$OPS_DIR/flat_level.dat" ]; then
+  mkdir -p "$WDIR"
+  cp "$OPS_DIR/flat_level.dat" "$WDIR/level.dat"
+  echo ">> Новый мир: плоская местность"
+fi
+
 # сервер, запущенный вручную (./start.sh в screen), помешает службе — занят порт
 if pgrep -x bedrock_server >/dev/null && ! systemctl is-active --quiet rustcraft 2>/dev/null; then
   echo "Сервер уже запущен вручную (./start.sh или screen). Остановите его командой stop в консоли и повторите."

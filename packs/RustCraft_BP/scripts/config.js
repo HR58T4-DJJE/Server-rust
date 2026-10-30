@@ -281,6 +281,25 @@ export const LAG = {
   tpsWarn: 15, // если TPS ниже — предупреждение в консоль с причинами
 };
 
+// ---------------------------------------------------------------- Природа (плоский мир)
+// Мир RustCraft плоский: без гор, оврагов и пещер. Леса, поляны, цветы и пруды расставляет terrain.js.
+// В обычном (неплоском) мире плагин ничего не делает.
+export const TERRAIN = {
+  enabled: true,
+  groundY: 60, // высота травы в плоском мире (см. tools/make_flat_world.py)
+  playerRadiusChunks: 3, // украшать чанки вокруг игроков (в пределах tick-distance)
+  pregen: true, // в фоне пройти всю карту (радиус SPAWN.radius), чтобы деревья не «вырастали» на глазах
+  pregenPauseTicks: 10, // пауза между участками 64x64 фонового прохода
+  forestThreshold: 0.55, // выше — густой лес
+  forestDensity: 0.55, // шанс дерева в точке сетки в лесу
+  meadowTreeChance: 0.04, // шанс дерева на поляне
+  spruceThreshold: 0.62, // выше — холодная зона с елями
+  grassChance: 0.3, // трава на поляне
+  flowerChance: 0.025, // цветы
+  pondChance: 0.04, // пруд в чанке поляны
+  flowers: ["minecraft:dandelion", "minecraft:poppy", "minecraft:cornflower", "minecraft:oxeye_daisy", "minecraft:azure_bluet"],
+};
+
 // ---------------------------------------------------------------- Оружие
 // speed — скорость пули (урон стрелы зависит от скорости), cooldown — в тиках
 export const GUNS = {

@@ -36,6 +36,11 @@ cp -r "$ROOT/packs/RustCraft_BP" "$BDS/behavior_packs/"
 cp -r "$ROOT/packs/RustCraft_RP" "$BDS/resource_packs/"
 mkdir -p "$BDS/worlds/$WORLD"
 cp "$ROOT/server/worlds/$WORLD/"world_*_packs.json "$BDS/worlds/$WORLD/"
+# шаблон плоского мира — только для нового мира, существующий мир не трогаем
+if [ ! -d "$BDS/worlds/$WORLD/db" ] && [ ! -f "$BDS/worlds/$WORLD/level.dat" ]; then
+  cp "$ROOT/server/worlds/$WORLD/level.dat" "$BDS/worlds/$WORLD/level.dat"
+  echo ">> Новый мир: плоская местность (леса и поляны расставит плагин terrain.js)"
+fi
 
 echo ">> Применяю настройки server/server.overrides"
 python3 - "$ROOT/server/server.overrides" "$BDS/server.properties" <<'PY'

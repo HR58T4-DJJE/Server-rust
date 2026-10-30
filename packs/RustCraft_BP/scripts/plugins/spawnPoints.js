@@ -6,6 +6,7 @@ import { system, world } from "@minecraft/server";
 import { SPAWN } from "../config.js";
 import { readJSON, writeJSON } from "../lib/util.js";
 import { cupboardsAt } from "./toolCupboard.js";
+import { decorateArea } from "./terrain.js";
 
 const POOL_KEY = "rust:spawn_pool";
 const AREA = "rc_spawn_scout";
@@ -148,6 +149,8 @@ function scout(replace) {
     system.runJob(
       (function* () {
         try {
+          // сначала природа вокруг (в плоском мире), чтобы точка не оказалась под будущим деревом
+          yield* decorateArea(dim, Math.floor(cx / 16), Math.floor(cz / 16), 1);
           yield* pickPointJob(dim, cx, cz, out);
         } finally {
           finish(out.point); // вызывается всегда, даже при ошибке, — поиск не «застрянет»
@@ -173,25 +176,37 @@ export function spawnPointCount() {
   return pool.length;
 }
 
-/**
- * Переносит игрока на случайную проверенную точку.
- * Возвращает false, если запас ещё пуст — тогда игрок остаётся на обычной точке спавна мира (она на земле).
- */
-export function teleportToSpawnPoint(player, tries = 0) {
-  if (!pool.length) return false;
+/** Случайная проверенная точка не в чужой базе (или undefined, если запас ещё пуст) */
+export function pickSpawnPoint() {
+  if (!pool.length) return undefined;
   const dim = overworld();
-  let point;
   for (let i = 0; i < 5; i++) {
     const p = pool[Math.floor(Math.random() * pool.length)];
-    if (!cupboardsAt(dim.id, p).length) {
-      point = p;
-      break;
-    }
+    if (!cupboardsAt(dim.id, p).length) return p;
   }
-  if (!point) return false;
-  player.teleport({ x: point.x + 0.5, y: point.y, z: point.z + 0.5 }, { dimension: dim });
+  return undefined;
+}
 
-  // после загрузки чанка убеждаемся, что место всё ещё нормальное (могли застроить или залить водой)
+/**
+ * Телепорт с затемнением экрана: пока экран чёрный, телефон подгружает новое место,
+ * и игрок не видит, как висит в воздухе. Плавное падение страхует от урона.
+ */
+export function fadeTeleport(player, location, dimension) {
+  try {
+    player.camera.fade({
+      fadeColor: { red: 0, green: 0, blue: 0 },
+      fadeTime: { fadeInTime: 0.2, holdTime: 1.5, fadeOutTime: 0.6 },
+    });
+  } catch {}
+  player.addEffect("slow_falling", 20 * 4, { showParticles: false });
+  system.runTimeout(() => {
+    if (player.isValid) player.teleport(location, { dimension });
+  }, 4);
+}
+
+/** Через 2 секунды после появления на точке убеждаемся, что место всё ещё нормальное */
+export function verifySpawnPoint(player, point, tries = 0) {
+  const dim = overworld();
   system.runTimeout(() => {
     if (!player.isValid || !dim.isChunkLoaded(point)) return;
     let y;
@@ -201,7 +216,8 @@ export function teleportToSpawnPoint(player, tries = 0) {
       return; // чанк ещё не готов — игрок уже стоит на проверенной точке
     }
     if (y === undefined) {
-      pool = pool.filter((p) => p !== point);
+      // место застроили или залили водой — убираем точку и переносим игрока на другую
+      pool = pool.filter((p) => !(p.x === point.x && p.z === point.z));
       savePool();
       if (tries < 3) teleportToSpawnPoint(player, tries + 1);
       return;
@@ -212,5 +228,16 @@ export function teleportToSpawnPoint(player, tries = 0) {
       player.teleport({ x: point.x + 0.5, y, z: point.z + 0.5 }, { dimension: dim });
     }
   }, 40);
+}
+
+/**
+ * Переносит игрока на случайную проверенную точку (первый вход, выбор «случайное место»).
+ * Возвращает false, если запас ещё пуст — тогда игрок остаётся на обычной точке спавна мира (она на земле).
+ */
+export function teleportToSpawnPoint(player, tries = 0) {
+  const point = pickSpawnPoint();
+  if (!point) return false;
+  fadeTeleport(player, { x: point.x + 0.5, y: point.y, z: point.z + 0.5 }, overworld());
+  verifySpawnPoint(player, point, tries);
   return true;
 }

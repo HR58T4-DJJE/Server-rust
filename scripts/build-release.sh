@@ -26,7 +26,13 @@ for d in "$OUT"/behavior_packs/vanilla_*; do VER="$(printf '%s\n%s\n' "$VER" "${
 echo "Bedrock Dedicated Server ${VER:-?} + RustCraft $(date +%Y-%m-%d)" > "$OUT/VERSION.txt"
 
 # в пакет не должно попасть ничего лишнего
-rm -rf "$OUT/worlds/RustCraft/db" "$OUT"/worlds/RustCraft/level* "$OUT"/ContentLog* "$OUT/backups"
+# шаблон плоского мира (level.dat) остаётся; копия — в ops/, чтобы мир можно было пересоздать
+rm -rf "$OUT/worlds/RustCraft/db" "$OUT/worlds/RustCraft/level.dat_old" "$OUT"/ContentLog* "$OUT/backups"
+cp "$ROOT/server/worlds/RustCraft/level.dat" "$OUT/ops/flat_level.dat"
+if [ ! -f "$OUT/worlds/RustCraft/level.dat" ]; then
+  echo "ОШИБКА: в пакете нет шаблона плоского мира" >&2
+  exit 1
+fi
 if grep -rq "selftest" "$OUT/behavior_packs/RustCraft_BP/scripts"; then
   echo "ОШИБКА: в пакет попал тестовый код" >&2
   exit 1

@@ -6,6 +6,7 @@ import "./plugins/building.js"; // киянка: улучшение и ремо�
 import "./plugins/gathering.js"; // залежи, бочки, добыча
 import "./plugins/crafting.js"; // меню крафта и верстаки
 import "./plugins/combat.js"; // огнестрел и медицина
+import "./plugins/terrain.js"; // природа плоского мира: леса, поляны, пруды
 import "./plugins/spawnPoints.js"; // поиск безопасных точек случайного спавна
 import "./plugins/spawn.js"; // случайный спавн, стартовый набор, спальники
 import "./plugins/mobs.js"; // запрещённые мобы (вода, скелеты, криперы, ведьмы, разбойники)

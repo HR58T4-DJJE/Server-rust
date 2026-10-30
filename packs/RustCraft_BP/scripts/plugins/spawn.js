@@ -3,8 +3,8 @@
 import { system, world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
 import { SPAWN } from "../config.js";
-import { actionbar, countItem, dist2, giveItem, parseKey, posKey, readJSON, showForm, writeJSON } from "../lib/util.js";
-import { teleportToSpawnPoint } from "./spawnPoints.js";
+import { actionbar, countItem, giveItem, parseKey, posKey, readJSON, showForm, writeJSON } from "../lib/util.js";
+import { fadeTeleport, pickSpawnPoint, teleportToSpawnPoint, verifySpawnPoint } from "./spawnPoints.js";
 
 const BAG_PREFIX = "bag|";
 const BAG_ID = "rust:sleeping_bag";
@@ -18,9 +18,41 @@ function giveKit(player, kit) {
 }
 
 // ---------------------------------------------------------------- случайный спавн
+const AUTO_KEY = "rust:auto_spawn"; // точка возрождения, которую назначил сервер (а не кровать)
+
+const near = (a, b, r) => Math.abs(a.x - b.x) <= r && Math.abs(a.z - b.z) <= r && Math.abs(a.y - b.y) <= r + 1;
+
 function randomSpawn(player) {
   if (SPAWN.randomSpawn) teleportToSpawnPoint(player);
 }
+
+/**
+ * В момент смерти назначаем игроку случайную проверенную точку как точку возрождения.
+ * Тогда игра сама подгружает это место на экране «Вы погибли», и игрок появляется сразу на земле,
+ * без телепорта после возрождения. Если игрок спал в кровати — кровать главнее.
+ */
+function armRespawn(player) {
+  if (!SPAWN.randomSpawn) return;
+  const auto = readJSON(player, AUTO_KEY);
+  const current = player.getSpawnPoint();
+  const isOurs = auto && current && current.dimension.id === "minecraft:overworld" && near(current, auto, 1);
+  if (current && !isOurs) return; // своя кровать
+  const point = pickSpawnPoint();
+  if (!point) {
+    if (isOurs) player.setSpawnPoint(); // старая точка могла испортиться — вернём обычный спавн мира
+    writeJSON(player, AUTO_KEY, undefined);
+    return;
+  }
+  player.setSpawnPoint({ dimension: world.getDimension("minecraft:overworld"), x: point.x, y: point.y, z: point.z });
+  writeJSON(player, AUTO_KEY, point);
+}
+
+world.afterEvents.entityDie.subscribe(({ deadEntity }) => {
+  if (deadEntity.typeId !== "minecraft:player") return;
+  try {
+    armRespawn(deadEntity);
+  } catch {}
+});
 
 // ---------------------------------------------------------------- спальники
 // Спальники держим в памяти (key -> {owner, last}), чтобы не перебирать всё хранилище мира
@@ -71,9 +103,11 @@ function bagCooldownLeft(data) {
   return Math.max(0, Math.ceil((data.last + SPAWN.bagCooldownSec * 1000 - Date.now()) / 1000));
 }
 
-function respawnMenu(player) {
+// atRandomPoint — игрок уже возродился на случайной точке, «случайное место» = остаться
+function respawnMenu(player, atRandomPoint) {
   const mine = bagsOf(player);
-  if (!mine.length) return randomSpawn(player);
+  const stayOrRandom = () => (atRandomPoint ? undefined : randomSpawn(player));
+  if (!mine.length) return stayOrRandom();
   const form = new ActionFormData().title("Возрождение").body("Где возродиться?");
   form.button("Случайное место", "textures/ui/World");
   for (const { key, data } of mine) {
@@ -82,15 +116,15 @@ function respawnMenu(player) {
     form.button(`Спальник ${p.x}, ${p.y}, ${p.z}\n${cd ? `§cперезарядка ${cd} с` : "§2готов"}`, "textures/blocks/rust_sleeping_bag");
   }
   showForm(player, form).then((res) => {
-    if (!res || res.canceled || res.selection === 0) return randomSpawn(player);
+    if (!res || res.canceled || res.selection === 0) return stayOrRandom();
     const { key, data } = mine[res.selection - 1];
     const cd = bagCooldownLeft(data);
     if (cd) {
       actionbar(player, `§cСпальник перезаряжается: ${cd} с`);
-      return respawnMenu(player);
+      return respawnMenu(player, atRandomPoint);
     }
     const p = parseKey(key);
-    player.teleport({ x: p.x + 0.5, y: p.y + 0.3, z: p.z + 0.5 }, { dimension: world.getDimension(p.dim) });
+    fadeTeleport(player, { x: p.x + 0.5, y: p.y + 0.3, z: p.z + 0.5 }, world.getDimension(p.dim));
     // проверяем, что спальник ещё на месте (чанк загрузится после телепорта)
     system.runTimeout(() => {
       if (!player.isValid) return;
@@ -105,7 +139,7 @@ function respawnMenu(player) {
         return;
       }
       if (bags.has(key)) saveBag(key, { ...data, last: Date.now() });
-    }, 10);
+    }, 30);
   });
 }
 
@@ -126,11 +160,15 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
     return;
   }
   giveKit(player, SPAWN.respawnKit);
-  // кровать (ванильная точка возрождения) имеет приоритет над случайным спавном,
-  // но только если игрок действительно появился у неё (кровать могли сломать)
+  const auto = readJSON(player, AUTO_KEY);
+  const atRandomPoint = !!auto && player.dimension.id === "minecraft:overworld" && near(player.location, auto, 3);
+  if (atRandomPoint) verifySpawnPoint(player, auto);
+  if (bagsOf(player).length) return respawnMenu(player, atRandomPoint);
+  if (atRandomPoint) return;
+  // возродился у своей кровати — оставляем; иначе (кровать сломана, запас точек был пуст) — случайная точка
   const bed = player.getSpawnPoint();
-  if (bed && bed.dimension.id === player.dimension.id && dist2(bed, player.location) < 16) return;
-  respawnMenu(player);
+  if (bed && bed.dimension.id === player.dimension.id && near(player.location, bed, 3)) return;
+  randomSpawn(player);
 });
 
 system.beforeEvents.startup.subscribe(({ blockComponentRegistry }) => {
