@@ -192,7 +192,9 @@ system.runInterval(() => {
   for (const key of [...cupboards.keys()]) {
     const c = parseKey(key);
     try {
-      const block = world.getDimension(c.dim).getBlock(c);
+      const dim = world.getDimension(c.dim);
+      if (!dim.isChunkLoaded(c)) continue;
+      const block = dim.getBlock(c);
       if (block && block.typeId !== TC_ID) removeCupboard(key);
     } catch {}
   }

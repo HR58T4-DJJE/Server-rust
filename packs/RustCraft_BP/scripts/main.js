@@ -6,7 +6,9 @@ import "./plugins/building.js"; // киянка: улучшение и ремо�
 import "./plugins/gathering.js"; // залежи, бочки, добыча
 import "./plugins/crafting.js"; // меню крафта и верстаки
 import "./plugins/combat.js"; // огнестрел и медицина
+import "./plugins/spawnPoints.js"; // поиск безопасных точек случайного спавна
 import "./plugins/spawn.js"; // случайный спавн, стартовый набор, спальники
+import "./plugins/mobs.js"; // в воде только рыбы
 import "./plugins/recycler.js"; // переработчик
 import "./plugins/hud.js"; // надпись о зоне шкафа
 import "./plugins/commands.js"; // команды /rust:*

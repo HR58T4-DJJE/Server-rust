@@ -140,6 +140,29 @@ export const SPAWNER = {
 export const SPAWN = {
   randomSpawn: true, // случайный спавн по карте при первом входе и смерти
   radius: 1500, // радиус от точки 0,0
+  // Точки спавна ищутся заранее в фоне: сервер подгружает участок карты, проверяет, что там суша,
+  // и запоминает точку. Игрок появляется сразу на готовой земле, без висения в воздухе.
+  poolSize: 40, // сколько проверенных точек держать в запасе
+  scoutIntervalTicks: 20 * 5, // как часто искать новую точку, пока запас не заполнен
+  refreshIntervalTicks: 20 * 60 * 5, // когда запас полон — раз в 5 минут заменять одну точку на новую
+  // на чём можно появиться
+  safeGround: [
+    "minecraft:grass_block",
+    "minecraft:dirt",
+    "minecraft:coarse_dirt",
+    "minecraft:podzol",
+    "minecraft:mycelium",
+    "minecraft:moss_block",
+    "minecraft:sand",
+    "minecraft:red_sand",
+    "minecraft:gravel",
+    "minecraft:stone",
+    "minecraft:andesite",
+    "minecraft:granite",
+    "minecraft:diorite",
+    "minecraft:snow",
+    "minecraft:terracotta",
+  ],
   bagCooldownSec: 120, // перезарядка спальника
   maxBags: 6,
   // выдаётся при каждом возрождении (как камень и факел в Rust)
@@ -151,6 +174,18 @@ export const SPAWN = {
   // дополнительно при самом первом входе
   firstJoinKit: [["rust:bandage", 2]],
 };
+
+// ---------------------------------------------------------------- Мобы
+// Эти мобы удаляются: не появляются сами и исчезают, если всё же возникли
+// (из структур, превращения зомби в воде, старых чанков). В воде остаются только рыбы.
+export const BANNED_MOBS = [
+  "minecraft:drowned",
+  "minecraft:guardian",
+  "minecraft:elder_guardian",
+  "minecraft:squid",
+  "minecraft:glow_squid",
+  "minecraft:dolphin",
+];
 
 // ---------------------------------------------------------------- Оружие
 // speed — скорость пули (урон стрелы зависит от скорости), cooldown — в тиках

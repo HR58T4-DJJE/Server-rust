@@ -4,43 +4,18 @@ import { system, world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
 import { SPAWN } from "../config.js";
 import { actionbar, giveItem, parseKey, posKey, readJSON, showForm, writeJSON } from "../lib/util.js";
+import { teleportToSpawnPoint } from "./spawnPoints.js";
 
 const BAG_PREFIX = "bag|";
 const BAG_ID = "rust:sleeping_bag";
-const BAD_SURFACE = /water|lava|ice|leaves|cactus|magma/;
 
 function giveKit(player, kit) {
   for (const [id, n] of kit) giveItem(player, id, n);
 }
 
 // ---------------------------------------------------------------- случайный спавн
-export function randomTeleport(player, attempt = 0) {
-  const overworld = world.getDimension("minecraft:overworld");
-  const x = Math.floor((Math.random() * 2 - 1) * SPAWN.radius);
-  const z = Math.floor((Math.random() * 2 - 1) * SPAWN.radius);
-  player.teleport({ x: x + 0.5, y: 250, z: z + 0.5 }, { dimension: overworld });
-  player.addEffect("slow_falling", 20 * 30, { showParticles: false });
-  player.addEffect("resistance", 20 * 30, { amplifier: 4, showParticles: false });
-  waitForGround(player, x, z, attempt, 0);
-}
-
-function waitForGround(player, x, z, attempt, wait) {
-  system.runTimeout(() => {
-    if (!player.isValid) return;
-    let top;
-    try {
-      top = player.dimension.getTopmostBlock({ x, z });
-    } catch {}
-    if (!top) {
-      if (wait < 10) return waitForGround(player, x, z, attempt, wait + 1); // чанк ещё грузится
-    } else if (!BAD_SURFACE.test(top.typeId) || attempt >= 6) {
-      player.teleport({ x: x + 0.5, y: top.y + 1, z: z + 0.5 });
-      player.removeEffect("slow_falling");
-      player.removeEffect("resistance");
-      return;
-    }
-    randomTeleport(player, attempt + 1); // вода/лава — пробуем другое место
-  }, 20);
+function randomSpawn(player) {
+  if (SPAWN.randomSpawn) teleportToSpawnPoint(player);
 }
 
 // ---------------------------------------------------------------- спальники
@@ -73,7 +48,7 @@ function bagCooldownLeft(data) {
 
 function respawnMenu(player) {
   const bags = bagsOf(player);
-  if (!bags.length) return SPAWN.randomSpawn && randomTeleport(player);
+  if (!bags.length) return randomSpawn(player);
   const form = new ActionFormData().title("Возрождение").body("Где возродиться?");
   form.button("Случайное место", "textures/ui/World");
   for (const { key, data } of bags) {
@@ -82,7 +57,7 @@ function respawnMenu(player) {
     form.button(`Спальник ${p.x}, ${p.y}, ${p.z}\n${cd ? `§cперезарядка ${cd} с` : "§2готов"}`, "textures/blocks/rust_sleeping_bag");
   }
   showForm(player, form).then((res) => {
-    if (!res || res.canceled || res.selection === 0) return SPAWN.randomSpawn && randomTeleport(player);
+    if (!res || res.canceled || res.selection === 0) return randomSpawn(player);
     const { key, data } = bags[res.selection - 1];
     const cd = bagCooldownLeft(data);
     if (cd) {
@@ -97,7 +72,7 @@ function respawnMenu(player) {
       if (block && block.typeId !== BAG_ID) {
         world.setDynamicProperty(BAG_PREFIX + key, undefined);
         actionbar(player, "§cСпальник уничтожен");
-        if (SPAWN.randomSpawn) randomTeleport(player);
+        randomSpawn(player);
         return;
       }
       writeJSON(world, BAG_PREFIX + key, { ...data, last: Date.now() });
@@ -118,7 +93,7 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
         "- Поставьте шкаф, чтобы защитить базу от строительства чужаками\n" +
         "- Помощь: /rust:info"
     );
-    if (SPAWN.randomSpawn) randomTeleport(player);
+    randomSpawn(player);
     return;
   }
   giveKit(player, SPAWN.respawnKit);

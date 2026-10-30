@@ -44,6 +44,7 @@ function trySpawnNear(player) {
     if (Math.random() < 0.02) world.setDynamicProperty(key, count - 1);
     return;
   }
+  if (!dim.isChunkLoaded({ x, y: player.location.y, z })) return; // не трогаем незагруженные чанки
   let top;
   try {
     top = dim.getTopmostBlock({ x, z });
