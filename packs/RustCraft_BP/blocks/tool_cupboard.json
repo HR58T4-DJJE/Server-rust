@@ -17,23 +17,11 @@
     },
     "components": {
       "minecraft:display_name": "Шкаф с инструментами",
-      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:geometry": "geometry.rust_m_tc",
       "minecraft:material_instances": {
         "*": {
-          "texture": "rust_tc_side",
-          "render_method": "opaque"
-        },
-        "up": {
-          "texture": "rust_tc_top",
-          "render_method": "opaque"
-        },
-        "down": {
-          "texture": "rust_tc_top",
-          "render_method": "opaque"
-        },
-        "north": {
-          "texture": "rust_tc_front",
-          "render_method": "opaque"
+          "texture": "rust_m_tc",
+          "render_method": "alpha_test"
         }
       },
       "minecraft:destructible_by_mining": {
@@ -47,7 +35,32 @@
       },
       "rust:tool_cupboard": {},
       "minecraft:map_color": "#a27848",
-      "tag:wood": {}
+      "tag:wood": {},
+      "minecraft:light_dampening": 0,
+      "minecraft:selection_box": {
+        "origin": [
+          -6.5,
+          0,
+          -4.8
+        ],
+        "size": [
+          13.0,
+          16,
+          9.3
+        ]
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -6.5,
+          0,
+          -4.8
+        ],
+        "size": [
+          13.0,
+          16,
+          9.3
+        ]
+      }
     },
     "permutations": [
       {

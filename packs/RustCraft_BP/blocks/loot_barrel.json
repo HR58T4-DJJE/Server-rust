@@ -9,19 +9,11 @@
     },
     "components": {
       "minecraft:display_name": "Бочка",
-      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:geometry": "geometry.rust_m_barrel",
       "minecraft:material_instances": {
         "*": {
-          "texture": "rust_barrel_side",
-          "render_method": "opaque"
-        },
-        "up": {
-          "texture": "rust_barrel_top",
-          "render_method": "opaque"
-        },
-        "down": {
-          "texture": "rust_barrel_top",
-          "render_method": "opaque"
+          "texture": "rust_m_barrel",
+          "render_method": "alpha_test"
         }
       },
       "minecraft:destructible_by_mining": {
@@ -32,7 +24,32 @@
       },
       "minecraft:loot": "loot_tables/empty.json",
       "tag:rust_loot": {},
-      "minecraft:map_color": "#2f5d8f"
+      "minecraft:map_color": "#2f5d8f",
+      "minecraft:light_dampening": 0,
+      "minecraft:selection_box": {
+        "origin": [
+          -6.25,
+          0,
+          -6.25
+        ],
+        "size": [
+          12.5,
+          14,
+          12.5
+        ]
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -6.25,
+          0,
+          -6.25
+        ],
+        "size": [
+          12.5,
+          14,
+          12.5
+        ]
+      }
     }
   }
 }

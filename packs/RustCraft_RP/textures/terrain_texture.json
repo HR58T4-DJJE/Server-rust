@@ -81,6 +81,42 @@
     },
     "rust_satchel_planted": {
       "textures": "textures/blocks/rust_satchel_planted"
+    },
+    "rust_m_c4": {
+      "textures": "textures/blocks/rust_m_c4"
+    },
+    "rust_m_satchel": {
+      "textures": "textures/blocks/rust_m_satchel"
+    },
+    "rust_m_tc": {
+      "textures": "textures/blocks/rust_m_tc"
+    },
+    "rust_m_wb1": {
+      "textures": "textures/blocks/rust_m_wb1"
+    },
+    "rust_m_wb2": {
+      "textures": "textures/blocks/rust_m_wb2"
+    },
+    "rust_m_wb3": {
+      "textures": "textures/blocks/rust_m_wb3"
+    },
+    "rust_m_recycler": {
+      "textures": "textures/blocks/rust_m_recycler"
+    },
+    "rust_m_barrel": {
+      "textures": "textures/blocks/rust_m_barrel"
+    },
+    "rust_m_crate": {
+      "textures": "textures/blocks/rust_m_crate"
+    },
+    "rust_m_stone_node": {
+      "textures": "textures/blocks/rust_m_stone_node"
+    },
+    "rust_m_metal_node": {
+      "textures": "textures/blocks/rust_m_metal_node"
+    },
+    "rust_m_sulfur_node": {
+      "textures": "textures/blocks/rust_m_sulfur_node"
     }
   }
 }

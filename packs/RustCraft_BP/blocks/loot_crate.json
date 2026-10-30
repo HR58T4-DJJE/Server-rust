@@ -9,19 +9,11 @@
     },
     "components": {
       "minecraft:display_name": "Военный ящик",
-      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:geometry": "geometry.rust_m_crate",
       "minecraft:material_instances": {
         "*": {
-          "texture": "rust_crate_side",
-          "render_method": "opaque"
-        },
-        "up": {
-          "texture": "rust_crate_top",
-          "render_method": "opaque"
-        },
-        "down": {
-          "texture": "rust_crate_top",
-          "render_method": "opaque"
+          "texture": "rust_m_crate",
+          "render_method": "alpha_test"
         }
       },
       "minecraft:destructible_by_mining": {
@@ -32,7 +24,32 @@
       },
       "minecraft:loot": "loot_tables/empty.json",
       "tag:rust_loot": {},
-      "minecraft:map_color": "#4e5a2f"
+      "minecraft:map_color": "#4e5a2f",
+      "minecraft:light_dampening": 0,
+      "minecraft:selection_box": {
+        "origin": [
+          -8,
+          0,
+          -5.5
+        ],
+        "size": [
+          16,
+          9.5,
+          10.75
+        ]
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -8,
+          0,
+          -5.5
+        ],
+        "size": [
+          16,
+          9.5,
+          10.75
+        ]
+      }
     }
   }
 }

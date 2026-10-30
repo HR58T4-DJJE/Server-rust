@@ -9,11 +9,11 @@
     },
     "components": {
       "minecraft:display_name": "Серная залежь",
-      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:geometry": "geometry.rust_m_sulfur_node",
       "minecraft:material_instances": {
         "*": {
-          "texture": "rust_sulfur_node",
-          "render_method": "opaque"
+          "texture": "rust_m_sulfur_node",
+          "render_method": "alpha_test"
         }
       },
       "minecraft:destructible_by_mining": {
@@ -25,7 +25,32 @@
       "minecraft:loot": "loot_tables/empty.json",
       "minecraft:map_color": "#d8c32e",
       "tag:rust_node": {},
-      "tag:stone": {}
+      "tag:stone": {},
+      "minecraft:light_dampening": 0,
+      "minecraft:selection_box": {
+        "origin": [
+          -7.5,
+          0,
+          -5
+        ],
+        "size": [
+          15.0,
+          11.5,
+          12.0
+        ]
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -7.5,
+          0,
+          -5
+        ],
+        "size": [
+          15.0,
+          11.5,
+          12.0
+        ]
+      }
     }
   }
 }

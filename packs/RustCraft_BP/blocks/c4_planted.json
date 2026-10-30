@@ -9,11 +9,11 @@
     },
     "components": {
       "minecraft:display_name": "Заряд C4",
-      "minecraft:geometry": "geometry.rust_small",
+      "minecraft:geometry": "geometry.rust_m_c4",
       "minecraft:material_instances": {
         "*": {
-          "texture": "rust_c4_planted",
-          "render_method": "opaque"
+          "texture": "rust_m_c4",
+          "render_method": "alpha_test"
         }
       },
       "minecraft:destructible_by_mining": false,
@@ -36,26 +36,26 @@
       },
       "minecraft:collision_box": {
         "origin": [
-          -4,
+          -5.25,
           0,
-          -4
+          -3
         ],
         "size": [
-          8,
+          10.5,
           5,
-          8
+          6
         ]
       },
       "minecraft:selection_box": {
         "origin": [
-          -4,
+          -5.25,
           0,
-          -4
+          -3
         ],
         "size": [
-          8,
+          10.5,
           5,
-          8
+          6
         ]
       },
       "minecraft:light_dampening": 0,

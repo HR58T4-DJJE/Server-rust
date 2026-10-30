@@ -9,19 +9,11 @@
     },
     "components": {
       "minecraft:display_name": "Верстак 1 уровня",
-      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:geometry": "geometry.rust_m_wb1",
       "minecraft:material_instances": {
         "*": {
-          "texture": "rust_wb1_side",
-          "render_method": "opaque"
-        },
-        "up": {
-          "texture": "rust_wb1_top",
-          "render_method": "opaque"
-        },
-        "down": {
-          "texture": "rust_wb1_top",
-          "render_method": "opaque"
+          "texture": "rust_m_wb1",
+          "render_method": "alpha_test"
         }
       },
       "minecraft:destructible_by_mining": {
@@ -36,7 +28,32 @@
       "rust:workbench": {
         "tier": 1
       },
-      "minecraft:map_color": "#5a5a5a"
+      "minecraft:map_color": "#5a5a5a",
+      "minecraft:light_dampening": 0,
+      "minecraft:selection_box": {
+        "origin": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          16,
+          16,
+          16
+        ]
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          16,
+          16,
+          16
+        ]
+      }
     }
   }
 }

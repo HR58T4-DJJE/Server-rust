@@ -9,11 +9,11 @@
     },
     "components": {
       "minecraft:display_name": "Сумка с зарядом",
-      "minecraft:geometry": "geometry.rust_small",
+      "minecraft:geometry": "geometry.rust_m_satchel",
       "minecraft:material_instances": {
         "*": {
-          "texture": "rust_satchel_planted",
-          "render_method": "opaque"
+          "texture": "rust_m_satchel",
+          "render_method": "alpha_test"
         }
       },
       "minecraft:destructible_by_mining": false,
@@ -36,26 +36,26 @@
       },
       "minecraft:collision_box": {
         "origin": [
-          -4,
+          -4.25,
           0,
-          -4
+          -3.25
         ],
         "size": [
-          8,
-          5,
-          8
+          8.5,
+          10,
+          6.5
         ]
       },
       "minecraft:selection_box": {
         "origin": [
-          -4,
+          -4.25,
           0,
-          -4
+          -3.25
         ],
         "size": [
-          8,
-          5,
-          8
+          8.5,
+          10,
+          6.5
         ]
       },
       "minecraft:light_dampening": 0,

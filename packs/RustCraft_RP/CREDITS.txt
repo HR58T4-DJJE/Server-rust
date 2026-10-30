@@ -1,0 +1,15 @@
+RustCraft — авторы ресурсов
+
+1) Pixel Perfection — XSSheep, лицензия CC BY-SA 4.0
+   https://creativecommons.org/licenses/by-sa/4.0/
+   Взято из VoxeLibre (https://git.minetest.land/VoxeLibre/VoxeLibre), textures/:
+   - default_stone.png          -> модель «Залежь камня» (rust_m_stone_node.png)
+   - mcl_core_iron_ore.png      -> модель «Залежь металла» (rust_m_metal_node.png)
+   - mcl_core_gold_ore.png      -> модель «Залежь серы» (rust_m_sulfur_node.png), ИЗМЕНЕНО: вкрапления перекрашены в цвет серы
+   - default_stone_brick.png    -> rust_build_stone.png («Постройка: камень»)
+   - mcl_doors_door_iron_*.png  -> door_iron_lower.png, door_iron_upper.png, items/door_iron.png (иконка собрана из половин)
+   - doors_trapdoor_steel.png   -> iron_trapdoor.png
+   Эти файлы и их производные распространяются на тех же условиях (CC BY-SA 4.0).
+
+2) Остальные текстуры и все 3D-модели (rust_m_*) — RustCraft, сгенерированы
+   tools/gen_textures.py и tools/gen_models.py.
