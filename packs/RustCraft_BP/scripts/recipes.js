@@ -31,7 +31,6 @@ export const RECIPES = [
   { cat: "Строительство", id: "minecraft:chest", count: 1, cost: { "rust:wood": 12 }, wb: 0 },
   { cat: "Строительство", id: "minecraft:furnace", count: 1, cost: { "rust:stones": 12, "rust:wood": 4 }, wb: 0 },
   { cat: "Строительство", id: "minecraft:ladder", count: 3, cost: { "rust:wood": 3 }, wb: 0 },
-  { cat: "Строительство", id: "minecraft:stone_button", count: 2, cost: { "rust:stones": 1 }, wb: 0 },
   {
     cat: "Строительство",
     id: "rust:workbench_1",
@@ -152,7 +151,6 @@ export const RESULT_NAMES = {
   "minecraft:chest": "Ящик",
   "minecraft:furnace": "Печь",
   "minecraft:ladder": "Лестница",
-  "minecraft:stone_button": "Кнопка",
   "minecraft:iron_door": "Металлическая дверь",
   "minecraft:iron_bars": "Решётка",
   "minecraft:bow": "Охотничий лук",

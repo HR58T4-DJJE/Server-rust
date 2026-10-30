@@ -225,9 +225,35 @@ export const BANNED_ITEMS = [
   // телепорт сквозь стены баз — обход шкафа и дверей без рейда
   "minecraft:ender_pearl",
   "minecraft:chorus_fruit",
+  // редстоун-механизмы: в Rust их нет (железные двери открываются рукой — см. doors.js)
+  "minecraft:observer",
+  "minecraft:dispenser",
+  "minecraft:dropper",
+  "minecraft:hopper",
+  "minecraft:lever",
+  "minecraft:tripwire_hook",
+  "minecraft:target",
+  "minecraft:noteblock",
+  "minecraft:crafter",
+  "minecraft:lightning_rod",
+  "minecraft:trapped_chest",
+  // магия и «майнкрафтовый» прогресс, которого нет в Rust
+  "minecraft:brewing_stand",
+  "minecraft:elytra",
+  "minecraft:ender_eye",
 ];
-// Любые шалкеры (всех цветов)
-export const BANNED_ITEM_PATTERNS = [/^minecraft:.*shulker_box$/];
+export const BANNED_ITEM_PATTERNS = [
+  /^minecraft:.*shulker_box$/, // шалкеры всех цветов
+  /^minecraft:.*redstone/, // пыль, блок, факел, лампа, руда редстоуна
+  /^minecraft:.*piston/, // поршни и липкие поршни
+  /^minecraft:.*(repeater|comparator)$/, // повторители и компараторы
+  /^minecraft:daylight_detector/, // датчики дневного света
+  /^minecraft:.*_button$/, // все кнопки
+  /^minecraft:.*pressure_plate$/, // все нажимные плиты
+  /^minecraft:(rail|golden_rail|detector_rail|activator_rail)$/, // рельсы
+  /^minecraft:.*minecart$/, // все вагонетки
+  /^minecraft:.*sculk_sensor$/, // скалк-датчики
+];
 
 // ---------------------------------------------------------------- Защита от лагов
 export const LAG = {

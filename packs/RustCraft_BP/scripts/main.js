@@ -10,6 +10,7 @@ import "./plugins/spawnPoints.js"; // поиск безопасных точек
 import "./plugins/spawn.js"; // случайный спавн, стартовый набор, спальники
 import "./plugins/mobs.js"; // запрещённые мобы (вода, скелеты, криперы, ведьмы, разбойники)
 import "./plugins/bannedItems.js"; // запрещённые блоки (обсидиан, эндер-сундук, шалкеры, TNT...)
+import "./plugins/doors.js"; // железные двери открываются рукой (как кодовый замок)
 import "./plugins/recycler.js"; // переработчик
 import "./plugins/hud.js"; // надпись о зоне шкафа
 import "./plugins/lagGuard.js"; // защита от лагов и монитор TPS
